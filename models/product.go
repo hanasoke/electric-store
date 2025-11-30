@@ -41,3 +41,17 @@ func (pm *ProductModel) getAll() ([]Product, error) {
 
 	return products, nil
 }
+
+func (pm *ProductModel) GetByID(id int) (*Product, error) {
+	query := `SELECT id, name, category, price, stock, description, created_at FROM products WHERE id = ?`
+
+	row := pm.DB.QueryRow(query, id)
+
+	var p Product
+	err := row.Scan(&p.ID, &p.Name, &p.Category, &p.Price, &p.Stock, &p.Description, &p.CreatedAt)
+	if err != nil {
+		return nil, err
+	}
+
+	return &p, nil
+}
