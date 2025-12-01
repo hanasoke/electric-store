@@ -43,7 +43,8 @@ func (pm *ProductModel) GetAll() ([]Product, error) {
 }
 
 func (pm *ProductModel) GetByID(id int) (*Product, error) {
-	query := `SELECT id, name, category, price, stock, description, created_at FROM products WHERE id = ?`
+	query := `SELECT id, name, category, price, stock, description, created_at 
+              FROM products WHERE id = ?`
 
 	row := pm.DB.QueryRow(query, id)
 
@@ -57,7 +58,8 @@ func (pm *ProductModel) GetByID(id int) (*Product, error) {
 }
 
 func (pm *ProductModel) Create(product *Product) error {
-	query := `INSERT INTO products (name, category, price, stock, description) VALUES (?, ?, ?, ?, ?)`
+	query := `INSERT INTO products (name, category, price, stock, description) 
+              VALUES (?, ?, ?, ?, ?)`
 
 	result, err := pm.DB.Exec(query, product.Name, product.Category, product.Price, product.Stock, product.Description)
 	if err != nil {
@@ -74,14 +76,15 @@ func (pm *ProductModel) Create(product *Product) error {
 }
 
 func (pm *ProductModel) Update(product *Product) error {
-	query := `UPDATE products SET name=?, category=?, price=?, stock=?, description=? WHERE id=?`
+	query := `UPDATE products SET name=?, category=?, price=?, stock=?, description=? 
+              WHERE id=?`
 
 	_, err := pm.DB.Exec(query, product.Name, product.Category, product.Price, product.Stock, product.Description, product.ID)
 	return err
 }
 
 func (pm *ProductModel) Delete(id int) error {
-	query := `Delete FROM products WHERE id=?`
+	query := `DELETE FROM products WHERE id=?`
 
 	_, err := pm.DB.Exec(query, id)
 	return err

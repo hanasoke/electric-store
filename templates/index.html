@@ -33,9 +33,8 @@
                 <td>{{.Description}}</td>
                 <td>
                     <a href="/edit?id={{.ID}}" class="btn btn-warning btn-sm">Edit</a>
-                    <a href="/delete?id={{.ID}}" class="btn btn-danger btn-sm"
-                        onclick="return confirm('Yakin ingin menghapus?')"
-                        >Hapus</a>
+                    <a href="/delete?id={{.ID}}" class="btn btn-danger btn-sm" 
+                       onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
                 </td>
             </tr>
             {{end}}
