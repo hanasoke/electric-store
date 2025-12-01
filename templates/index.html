@@ -1,0 +1,51 @@
+{{template "base.html" .}}
+
+{{define "title"}}Dashboard - Toko Alat Listrik{{end}}
+
+{{define "content"}}
+<div class="d-flex justify-content-between align-items-center mb-4">
+    <h2>Daftar Produk</h2>
+    <a href="/create" class="btn btn-primary">Tambah Produk</a>
+</div>
+
+{{if .}}
+<div class="table-responsive">
+    <table class="table table-striped table-hover">
+        <thead class="table-dark">
+            <tr>
+                <th>ID</th>
+                <th>Nama Produk</th>
+                <th>Kategori</th>
+                <th>Harga</th>
+                <th>Stok</th>
+                <th>Deskripsi</th>
+                <th>Aksi</th>
+            </tr>
+        </thead>
+        <tbody>
+            {{range .}}
+            <tr>
+                <td>{{.ID}}</td>
+                <td>{{.Name}}</td>
+                <td>{{.Category}}</td>
+                <td>Rp {{printf "%.2f" .Price}}</td>
+                <td>{{.Stock}}</td>
+                <td>{{.Description}}</td>
+                <td>
+                    <a href="/edit?id={{.ID}}" class="btn btn-warning btn-sm">Edit</a>
+                    <a href="/delete?id={{.ID}}" class="btn btn-danger btn-sm"
+                        onclick="return confirm('Yakin ingin menghapus?')"
+                        >Hapus</a>
+                </td>
+            </tr>
+            {{end}}
+        </tbody>
+    </table>
+</div>
+{{else}}
+<div class="alert alert-info">
+    <h4>Belum ada data produk</h4>
+    <p>Silakan tambahkan produk pertama Anda dengan mengklik tombol "Tambah Produk" di atas.</p>
+</div>
+{{end}}
+{{end}}
