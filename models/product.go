@@ -19,7 +19,7 @@ type ProductModel struct {
 	DB *sql.DB
 }
 
-func (pm *ProductModel) getAll() ([]Product, error) {
+func (pm *ProductModel) GetAll() ([]Product, error) {
 	query := `SELECT id, name, category, price, stock, description, created_at 
               FROM products ORDER BY created_at DESC`
 
