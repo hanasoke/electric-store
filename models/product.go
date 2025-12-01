@@ -79,3 +79,10 @@ func (pm *ProductModel) Update(product *Product) error {
 	_, err := pm.DB.Exec(query, product.Name, product.Category, product.Price, product.Stock, product.Description, product.ID)
 	return err
 }
+
+func (pm *ProductModel) Delete(id int) error {
+	query := `Delete FROM products WHERE id=?`
+
+	_, err := pm.DB.Exec(query, id)
+	return err
+}
