@@ -4,6 +4,7 @@ import (
 	"electric-store/config"
 	"electric-store/models"
 	"html/template"
+	"log"
 	"net/http"
 	"strconv"
 )
@@ -15,6 +16,7 @@ type ProductHandler struct {
 func NewProductHandler() (*ProductHandler, error) {
 	db, err := config.DBConnection()
 	if err != nil {
+		log.Printf("❌ Database connection failed: %v", err)
 		return nil, err
 	}
 
@@ -24,19 +26,29 @@ func NewProductHandler() (*ProductHandler, error) {
 }
 
 func (ph *ProductHandler) Index(w http.ResponseWriter, r *http.Request) {
+	log.Println("📨 Request received for /")
+
 	products, err := ph.model.GetAll()
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("❌ Error getting products: %v", err)
+		http.Error(w, "Error retrieving products: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	tmpl, err := template.ParseFiles("templates/index.html")
+	log.Printf("📊 Found %d products", len(products))
+
+	tmpl, err := template.ParseFiles("templates/base.html", "templates/index.html")
 	if err != nil {
-		http.Error(w, err.Error(), http.StatusInternalServerError)
+		log.Printf("❌ Error parsing template: %v", err)
+		http.Error(w, "Error loading template: "+err.Error(), http.StatusInternalServerError)
 		return
 	}
 
-	tmpl.Execute(w, products)
+	err = tmpl.Execute(w, products)
+	if err != nil {
+		log.Printf("❌ Error executing template: %v", err)
+		http.Error(w, "Error rendering page: "+err.Error(), http.StatusInternalServerError)
+	}
 }
 
 func (ph *ProductHandler) CreateForm(w http.ResponseWriter, r *http.Request) {
