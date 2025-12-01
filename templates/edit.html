@@ -1,0 +1,62 @@
+{{template "base.html" .}}
+
+{{define "title"}}Edit Produk - Toko Alat Listrik{{end}}
+
+{{define "content"}}
+<div class="row justify-content-center">
+    <div class="col-md-8">
+        <div class="card">
+            <div class="card-header">
+                <h4 class="mb-0">Edit Produk</h4>
+            </div>
+            <div class="card-body">
+                <form action="/update" method="POST">
+                    <input type="hidden" name="id" value="{{.ID}}">
+                    
+                    <div class="mb-3">
+                        <label for="name" class="form-label">Nama Produk</label>
+                        <input type="text" class="form-control" id="name" name="name" value="{{.Name}}" required>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="category" class="form-label">Kategori</label>
+                        <select class="form-select" id="category" name="category" required>
+                            <option value="Kabel" {{if eq .Category "Kabel"}}selected{{end}}>Kabel</option>
+                            <option value="Lampu" {{if eq .Category "Lampu"}}selected{{end}}>Lampu</option>
+                            <option value="Saklar" {{if eq .Category "Saklar"}}selected{{end}}>Saklar</option>
+                            <option value="Stop Kontak" {{if eq .Category "Stop Kontak"}}selected{{end}}>Stop Kontak</option>
+                            <option value="Perlengkapan Instalasi" {{if eq .Category "Perlengkapan Instalasi"}}selected{{end}}>Perlengkapan Instalasi</option>
+                        </select>
+                    </div>
+                    
+                    <div class="row">
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="price" class="form-label">Harga</label>
+                                <input type="number" step="0.01" class="form-control" id="price" name="price" 
+                                       value="{{printf "%.2f" .Price}}" required>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <div class="mb-3">
+                                <label for="stock" class="form-label">Stok</label>
+                                <input type="number" class="form-control" id="stock" name="stock" value="{{.Stock}}" required>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="mb-3">
+                        <label for="description" class="form-label">Deskripsi</label>
+                        <textarea class="form-control" id="description" name="description" rows="3">{{.Description}}</textarea>
+                    </div>
+                    
+                    <div class="d-grid gap-2 d-md-flex justify-content-md-end">
+                        <a href="/" class="btn btn-secondary me-md-2">Kembali</a>
+                        <button type="submit" class="btn btn-primary">Update</button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
+</div>
+{{end}}
