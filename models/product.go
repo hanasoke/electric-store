@@ -55,3 +55,27 @@ func (pm *ProductModel) GetByID(id int) (*Product, error) {
 
 	return &p, nil
 }
+
+func (pm *ProductModel) Create(product *Product) error {
+	query := `INSERT INTO products (name, category, price, stock, description) VALUES (?, ?, ?, ?, ?)`
+
+	result, err := pm.DB.Exec(query, product.Name, product.Category, product.Price, product.Stock, product.Description)
+	if err != nil {
+		return err
+	}
+
+	id, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	product.ID = int(id)
+	return nil
+}
+
+func (pm *ProductModel) Update(product *Product) error {
+	query := `UPDATE products SET name=?, category=?, price=?, stock=?, description=? WHERE id=?`
+
+	_, err := pm.DB.Exec(query, product.Name, product.Category, product.Price, product.Stock, product.Description, product.ID)
+	return err
+}
