@@ -1,15 +1,20 @@
 package productcontroller
 
 import (
+	"electric-store/controllers"
 	"net/http"
-	"text/template"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	temp, err := template.ParseFiles("views/products/index.html")
-	if err != nil {
-		panic(err)
+
+	// Prepare template data
+	data := struct {
+		Title      string
+		ActivePage string
+	}{
+		Title:      "Products",
+		ActivePage: "products",
 	}
 
-	temp.Execute(w, nil)
+	controllers.RenderTemplate(w, "products", data)
 }

@@ -1,15 +1,21 @@
 package categorycontroller
 
 import (
+	"electric-store/controllers"
 	"net/http"
-	"text/template"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	temp, err := template.ParseFiles("views/categories/index.html")
-	if err != nil {
-		panic(err)
+	// Prepare template data
+	data := struct {
+		Title      string
+		ActivePage string
+	}{
+		Title:      "Categories",
+		ActivePage: "categories",
 	}
 
-	temp.Execute(w, nil)
+	// Render template
+	controllers.RenderTemplate(w, "categories", data)
+
 }
