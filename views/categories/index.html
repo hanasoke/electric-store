@@ -1,27 +1,37 @@
 {{ define "content" }}
-<div class="row">
-  <div class="col">
-    <h1>Categories List</h1>
+  <div class="row">
+    <div class="col">
+      <h1>Categories List</h1>
+    </div>
+    <div class="col">
+      <a href="/categories/create" class="btn btn-primary float-end">Add New Category</a>
+    </div>
   </div>
-  <div class="col">
-    <a href="/categories/create" class="btn btn-primary float-end">Add New Category</a>
-  </div>
-</div>
 
-<div class="row">
-  <div class="col-md-12">
-    <table class="table table-striped">
-      <thead class="text-center">
-        <tr>
-          <th>No</th>
-          <th>Name</th>
-          <th>Actions</th>
-        </tr>
-      </thead>
-      <tbody>
+  {{ if .Categories }}
+    <div class="row mt-4">
+      <div class="col-md-12">
+        <table class="table table-striped">
+          <thead class="text-center">
+            <tr>
+              <th>No</th>
+              <th>Name</th>
+              <th>Actions</th>
+            </tr>
+          </thead>
+          <tbody>
 
-      </tbody>
-    </table>
-  </div>
-</div>
+          </tbody>
+        </table>
+      </div>
+    </div>
+  {{ else }}
+    <div class="row mt-4">
+      <div class="col-md-12">
+        <div class="alert alert-info">
+          No categories found.
+        </div>
+      </div>
+    </div>
+  {{ end }}
 {{ end }}
