@@ -27,6 +27,26 @@ func IsCategoryExists(name string) (bool, error) {
 	return true, nil
 }
 
+func IsCategoryExceptID(name string, id int) (bool, error) {
+	var Id int
+	err := config.DB.QueryRow(`
+		SELECT id FROM categories 
+		WHERE name = ? AND id != ?
+		LIMIT 1`,
+		name, id,
+	).Scan(&Id)
+
+	if err == sql.ErrNoRows {
+		return false, nil
+	}
+
+	if err != nil {
+		return false, err
+	}
+
+	return true, nil
+}
+
 func GetAll() []entities.Category {
 	rows, err := config.DB.Query(`SELECT id, name, created_at, updated_at FROM categories ORDER BY id DESC`)
 	if err != nil {
@@ -50,4 +70,26 @@ func GetAll() []entities.Category {
 	}
 
 	return categories
+}
+
+func Create(category entities.Category) error {
+	exists, err := IsCategoryExists(category.Name)
+	if err != nil {
+		return err
+	}
+
+	if exists {
+		return ErrDuplicateCategory
+	}
+
+	_, err = config.DB.Exec(`
+		INSERT INTO categories (
+			name, 
+			created_at
+		) VALUES (?, ?)`,
+		category.Name,
+		category.CreatedAt,
+	)
+
+	return err
 }
