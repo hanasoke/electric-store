@@ -11,17 +11,30 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	// Ambil data kategori dari model
 	categories := categorymodel.GetAll()
 
+	// Tambahkan nomor urut (jika diperlukan)
+	type CategoryWithNo struct {
+		No       int
+		Category entities.Category
+	}
+
+	var categoriesWithNo []CategoryWithNo
+	for i, category := range categories {
+		categoriesWithNo = append(categoriesWithNo, CategoryWithNo{
+			No:       i + 1,
+			Category: category,
+		})
+	}
+
 	// Prepare template data
 	data := struct {
 		Title      string
 		ActivePage string
-		Categories []entities.Category // Tambahkan ini
+		Categories []CategoryWithNo
 	}{
 		Title:      "Categories",
 		ActivePage: "categories",
-		Categories: categories,
+		Categories: categoriesWithNo,
 	}
 
-	// Render template
 	controllers.RenderTemplate(w, "categories", data)
 }
