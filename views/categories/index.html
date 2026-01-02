@@ -12,15 +12,24 @@
     <div class="row mt-4">
       <div class="col-md-12">
         <table class="table table-striped">
-          <thead class="text-center">
+          <thead>
             <tr>
-              <th>No</th>
+              <th class="text-center">No</th>
               <th>Name</th>
-              <th>Actions</th>
+              <th class="text-center">Actions</th>
             </tr>
           </thead>
           <tbody>
-            
+            {{ range $index, $item := .Categories }}
+              <tr>
+                <td class="text-center">{{$item.No}}</td>
+                <td>{{$item.Category.Name}}</td>
+                <td class="text-center">
+                  <a href="#" class="btn btn-sm btn-warning">Edit</a>
+                  <a href="#" class="btn btn-sm btn-danger">Delete</a>
+                </td>
+              </tr>
+            {{ end }}
           </tbody>
         </table>
       </div>
