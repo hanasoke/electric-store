@@ -6,7 +6,6 @@ import (
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
-
 	// Prepare template data
 	data := struct {
 		Title      string
