@@ -38,3 +38,13 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 	controllers.RenderTemplate(w, "categories", data)
 }
+
+func Add(w http.ResponseWriter, r *http.Request) {
+	if r.Method == http.MethodGet {
+
+	}
+
+	if r.Method == http.MethodPost {
+
+	}
+}
