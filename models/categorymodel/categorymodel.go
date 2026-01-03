@@ -72,6 +72,12 @@ func GetAll() []entities.Category {
 }
 
 func Create(category entities.Category) error {
+	// Validasi input
+	if category.Name == "" {
+		return errors.New("category name cannot be empty")
+	}
+
+	// Cek duplikat
 	exists, err := IsCategoryExists(category.Name)
 	if err != nil {
 		return err
@@ -81,6 +87,7 @@ func Create(category entities.Category) error {
 		return ErrDuplicateCategory
 	}
 
+	// Insert ke database
 	_, err = config.DB.Exec(`
 		INSERT INTO categories (
 			name, 
