@@ -48,7 +48,7 @@ func IsCategoryExceptID(name string, id int) (bool, error) {
 }
 
 func GetAll() []entities.Category {
-	rows, err := config.DB.Query(`SELECT id, name, created_at, updated_at FROM categories ORDER BY id DESC`)
+	rows, err := config.DB.Query(`SELECT id, name, created_at FROM categories ORDER BY id DESC`)
 	if err != nil {
 		panic(err)
 	}
@@ -62,7 +62,6 @@ func GetAll() []entities.Category {
 			&category.Id,
 			&category.Name,
 			&category.CreatedAt,
-			&category.UpdatedAt,
 		); err != nil {
 			panic(err)
 		}
