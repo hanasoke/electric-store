@@ -55,7 +55,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if cookie, err := r.Cookie("category_name"); err == nil {
-		errorMessage = cookie.Value
+		categoryName = cookie.Value
 		http.SetCookie(w, &http.Cookie{
 			Name:   "category_name",
 			MaxAge: -1,
@@ -63,7 +63,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	}
 
 	if cookie, err := r.Cookie("validation_error"); err == nil {
-		errorMessage = cookie.Value
+		validationError = cookie.Value
 		http.SetCookie(w, &http.Cookie{
 			Name:   "validation_error",
 			MaxAge: -1,
@@ -75,18 +75,18 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		Title           string
 		ActivePage      string
 		Categories      []CategoryWithNo
-		successMessage  string
+		SuccessMessage  string
 		ErrorMessage    string
 		CategoryName    string
-		validationError string
+		ValidationError string
 	}{
 		Title:           "Categories",
 		ActivePage:      "categories",
 		Categories:      categoriesWithNo,
-		successMessage:  successMessage,
+		SuccessMessage:  successMessage,
 		ErrorMessage:    errorMessage,
 		CategoryName:    categoryName,
-		validationError: validationError,
+		ValidationError: validationError,
 	}
 
 	controllers.RenderTemplate(w, "categories", data)
@@ -116,7 +116,7 @@ func Store(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// BUat entity category
+	// Buat entity category
 	category := entities.Category{
 		Name:      name,
 		CreatedAt: time.Now(),
@@ -128,7 +128,7 @@ func Store(w http.ResponseWriter, r *http.Request) {
 	if err != nil {
 		var errorMessage string
 		if err == categorymodel.ErrDuplicateCategory {
-			errorMessage = "Category '" + name + "' already exists"
+			errorMessage = "Category " + name + " already exists"
 		} else {
 			errorMessage = "Failed to create category: " + err.Error()
 		}
@@ -154,7 +154,7 @@ func Store(w http.ResponseWriter, r *http.Request) {
 	// Set success message
 	http.SetCookie(w, &http.Cookie{
 		Name:     "success",
-		Value:    "Category '" + name + "' successfully created",
+		Value:    "Category " + name + " successfully created",
 		Path:     "/",
 		MaxAge:   5,
 		HttpOnly: true,

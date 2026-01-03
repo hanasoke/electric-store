@@ -4,32 +4,60 @@
       <h1>Categories List</h1>
     </div>
     <div class="col">
-      <a href="/categories/create" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#addCategory">Add New Category</a>
+      <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#addCategory">
+        Add New Category
+      </button>
     </div>
   </div>
 
-  <!-- Modal -->
+  <!-- Alert Messages -->
+  {{ if .SuccessMessage }}
+  <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+    {{ .SuccessMessage }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {{ end }}
+
+  <!-- Modal Form -->
   <div class="modal fade" id="addCategory" tabindex="-1" aria-labelledby="addCategoryLabel" aria-hidden="true">
     <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h1 class="modal-title fs-5" id="addCategoryLabel">Add Category</h1>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-          <div class="mb-3">
-            <label for="category" class="form-label">Category</label>
-            <input type="text" class="form-control is-invalid" id="category" placeholder="input the category">
-            <div class="invalid-feedback">
-                Category errors message 
+      <form method="POST" action="/categories">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h1 class="modal-title fs-5" id="addCategoryLabel">Add Category</h1>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+          </div>
+          <div class="modal-body">
+            <div class="mb-3">
+              {{ if .ErrorMessage }}
+                <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                  {{ .ErrorMessage }}
+                  <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                </div>
+              {{ end }}
+            </div>
+            <div class="mb-3">
+              <label for="name" class="form-label">Category Name</label>
+              <input 
+                type="text" 
+                class="form-control {{ if .ValidationError }}is-invalid{{ end }}" 
+                id="name" 
+                name="name" 
+                value="{{ .CategoryName }}"
+                placeholder="Enter category name">
+              {{ if .ValidationError }}
+              <div class="invalid-feedback">
+                {{ .ValidationError }}
+              </div>
+              {{ end }}
             </div>
           </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            <button type="submit" class="btn btn-primary">Submit</button>
+          </div>
         </div>
-        <div class="modal-footer">
-          <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-          <button type="button" class="btn btn-primary">Submit</button>
-        </div>
-      </div>
+      </form>
     </div>
   </div>
 
@@ -50,8 +78,8 @@
                 <td class="text-center">{{$item.No}}</td>
                 <td>{{$item.Category.Name}}</td>
                 <td class="text-center">
-                  <a href="#" class="btn btn-sm btn-warning">Edit</a>
-                  <a href="#" class="btn btn-sm btn-danger">Delete</a>
+                  <button class="btn btn-sm btn-warning">Edit</button>
+                  <button class="btn btn-sm btn-danger">Delete</button>
                 </td>
               </tr>
             {{ end }}
@@ -68,4 +96,15 @@
       </div>
     </div>
   {{ end }}
+
+  <!-- Script untuk auto show modal jika ada error -->
+  {{ if or .ErrorMessage .CategoryName }}
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // Auto show modal jika ada error atau nilai sebelumnya
+        const modal = new bootstrap.Modal(document.getElementById('addCategory'));
+        modal.show();
+      });
+    </script>
+    {{ end }}
 {{ end }}
