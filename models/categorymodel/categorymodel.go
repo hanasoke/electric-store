@@ -151,3 +151,27 @@ func Update(id int, category entities.Category) error {
 
 	return err
 }
+
+func Delete(id int) error {
+	// Cek apakah kategori digunakan oleh produk
+	var count int
+	err := config.DB.QueryRow(`
+		SELECT COUNT(*) FROM products 
+		WHERE category_id = ?`, id,
+	).Scan(&count)
+
+	if err != nil {
+		return err
+	}
+
+	if count > 0 {
+		return errors.New("Category cannot be deleted because it has products")
+	}
+
+	// Hapus Kategori
+	_, err = config.DB.Exec(`
+		DELETE FROM categories 
+		WHERE id = ?`, id)
+
+	return err
+}
