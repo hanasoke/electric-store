@@ -68,11 +68,11 @@
                 <td>{{$item.Category.Name}}</td>
                 <td class="text-center">
                   <a href="#" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editCategory">Edit</a>
-                  <button type="submit" class="btn btn-sm btn-danger">Delete</button>
+                  <button type="submit" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteCategory" >Delete</button>
                 </td>
               </tr>
 
-              <!-- Modal -->
+              <!-- Edit Modal -->
               <div class="modal fade" id="editCategory" tabindex="-1" aria-labelledby="editCategoryLabel" aria-hidden="true">
                 <div class="modal-dialog">
                   <div class="modal-content">
@@ -81,15 +81,37 @@
                       <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-                        <label for="name" class="form-label">Category Name</label>
-                        <input type="text" class="form-control is-invalid" id="name" name="name" placeholder="Edit category name">
-                        <div class="invalid-feedback">
-                          Error
+                      <div class="mb-3">
+                        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                          Error Alert
+                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                         </div>
+                      </div>
+                        <label for="name" class="form-label">Category Name</label>
+                        <input type="text" class="form-control" id="name" name="name" placeholder="Edit category name">
                     </div>
                     <div class="modal-footer">
                       <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
                       <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
+
+              <!-- Delete Modal -->
+              <div class="modal fade" id="deleteCategory" tabindex="-1" aria-labelledby="deleteCategoryLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="deleteCategoryLabel">Delete Category</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <h5>Are you sure want to delete 'name' category</h5>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-danger">Delete</button>
                     </div>
                   </div>
                 </div>
