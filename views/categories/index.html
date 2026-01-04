@@ -72,10 +72,33 @@
                 <td class="text-center">{{$item.No}}</td>
                 <td>{{$item.Category.Name}}</td>
                 <td class="text-center">
-                  <button class="btn btn-sm btn-warning">Edit</button>
-                  <button class="btn btn-sm btn-danger">Delete</button>
+                  <a href="#" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editCategory">Edit</a>
+                  <button type="submit" class="btn btn-sm btn-danger">Delete</button>
                 </td>
               </tr>
+
+              <!-- Modal -->
+              <div class="modal fade" id="editCategory" tabindex="-1" aria-labelledby="editCategoryLabel" aria-hidden="true">
+                <div class="modal-dialog">
+                  <div class="modal-content">
+                    <div class="modal-header">
+                      <h1 class="modal-title fs-5" id="editCategoryLabel">Edit Category</h1>
+                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <label for="name" class="form-label">Category Name</label>
+                        <input type="text" class="form-control is-invalid" id="name" name="name" placeholder="Enter category name">
+                        <div class="invalid-feedback">
+                          Error
+                        </div>
+                    </div>
+                    <div class="modal-footer">
+                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                      <button type="button" class="btn btn-primary">Save changes</button>
+                    </div>
+                  </div>
+                </div>
+              </div>
             {{ end }}
           </tbody>
         </table>
