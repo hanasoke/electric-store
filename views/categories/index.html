@@ -12,7 +12,7 @@
 
   <!-- Alert Messages -->
   {{ if .SuccessMessage }}
-  <div class="alert alert-success alert-dismissible fade show mt-3" role="alert">
+  <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
     {{ .SuccessMessage }}
     <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
   </div>
@@ -56,7 +56,7 @@
   </div>
 
   {{ if .Categories }}
-    <div class="row mt-4">
+    <div class="row mt-2">
       <div class="col-md-12">
         <table class="table table-striped">
           <thead>
@@ -90,15 +90,68 @@
       </div>
     </div>
   {{ end }}
-
-  <!-- Script untuk auto show modal jika ada error -->
+  
   {{ if or .ErrorMessage .CategoryName }}
-  <script>
-    document.addEventListener('DOMContentLoaded', function() {
-      // Auto show modal jika ada error atau nilai sebelumnya
-        const modal = new bootstrap.Modal(document.getElementById('addCategory'));
-        modal.show();
+    <!-- Script untuk mengelola modal -->
+    <script type="text/javascript">
+      document.addEventListener('DOMContentLoaded', function() {
+        const modalElement = document.getElementById('addCategory');
+        const modalForm = document.getElementById('categoryForm');
+        const nameInput = document.getElementById('name');
+        const modalErrorAlert = document.getElementById('modalErrorAlert');
+        
+        // Function untuk reset form
+        function resetModalForm() {
+          if (modalForm) {
+            modalForm.reset();
+          }
+          if (nameInput) {
+            nameInput.classList.remove('is-invalid');
+            nameInput.value = '';
+          }
+          if (modalErrorAlert) {
+            modalErrorAlert.remove();
+          }
+        }
+        
+        // Event listener saat modal ditutup
+        if (modalElement) {
+          modalElement.addEventListener('hidden.bs.modal', function () {
+            resetModalForm();
+          });
+          
+          // Event listener saat modal dibuka
+          modalElement.addEventListener('show.bs.modal', function () {
+            // Reset form hanya jika modal dibuka dari tombol "Add New Category"
+            // bukan karena auto-show dari error
+            const modalTrigger = document.querySelector('[data-bs-target="#addCategory"]');
+            if (modalTrigger && document.activeElement === modalTrigger) {
+              resetModalForm();
+            }
+          });
+          
+          // Auto show modal jika ada error (dari cookie)
+          // Delay sedikit untuk memastikan DOM siap
+          setTimeout(function() {
+            const modal = new bootstrap.Modal(modalElement);
+            modal.show();
+          }, 100);
+        }
+        
+        // Validasi form sebelum submit
+        if (modalForm) {
+          modalForm.addEventListener('submit', function(e) {
+            const nameValue = nameInput ? nameInput.value.trim() : '';
+            if (!nameValue) {
+              e.preventDefault();
+              if (nameInput) {
+                nameInput.classList.add('is-invalid');
+              }
+            }
+          });
+        }
       });
     </script>
-    {{ end }}
+  {{ end }}
+  
 {{ end }}
