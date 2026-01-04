@@ -110,3 +110,25 @@ func Detail(id int) entities.Category {
 
 	return category
 }
+
+func Update(id int, category entities.Category) error {
+	exists, err := IsCategoryExceptID(category.Name, id)
+	if err != nil {
+		return err
+	}
+
+	if exists {
+		return ErrDuplicateCategory
+	}
+
+	_, err = config.DB.Exec(`
+		UPDATE categories 
+		SET name = ?, updated_at = ?
+		WHERE id = ?`,
+		category.Name,
+		category.UpdatedAt,
+		id,
+	)
+
+	return err
+}
