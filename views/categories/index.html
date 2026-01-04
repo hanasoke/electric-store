@@ -39,11 +39,6 @@
             <div class="mb-3">
               <label for="name" class="form-label">Category Name</label>
               <input type="text" class="form-control {{ if .ValidationError }}is-invalid{{ end }}" id="name" name="name" value="{{ .CategoryName }}" placeholder="Enter category name">
-              {{ if .ValidationError }}
-              <div class="invalid-feedback">
-                {{ .ValidationError }}
-              </div>
-              {{ end }}
             </div>
           </div>
           <div class="modal-footer">
@@ -87,7 +82,7 @@
                     </div>
                     <div class="modal-body">
                         <label for="name" class="form-label">Category Name</label>
-                        <input type="text" class="form-control is-invalid" id="name" name="name" placeholder="Enter category name">
+                        <input type="text" class="form-control is-invalid" id="name" name="name" placeholder="Edit category name">
                         <div class="invalid-feedback">
                           Error
                         </div>
@@ -159,19 +154,6 @@
             const modal = new bootstrap.Modal(modalElement);
             modal.show();
           }, 100);
-        }
-        
-        // Validasi form sebelum submit
-        if (modalForm) {
-          modalForm.addEventListener('submit', function(e) {
-            const nameValue = nameInput ? nameInput.value.trim() : '';
-            if (!nameValue) {
-              e.preventDefault();
-              if (nameInput) {
-                nameInput.classList.add('is-invalid');
-              }
-            }
-          });
         }
       });
     </script>
