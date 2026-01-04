@@ -71,6 +71,25 @@ func GetAll() []entities.Category {
 	return categories
 }
 
+// Tambahkan method GetById untuk mendapatkan kategori berdasarkan ID
+func GetById(id int) (entities.Category, error) {
+	var category entities.Category
+	err := config.DB.QueryRow(`
+		SELECT id, name, created_at, updated_at 
+		FROM categories 
+		WHERE id = ?`, id,
+	).Scan(&category.Id, &category.Name, &category.CreatedAt, &category.UpdatedAt)
+
+	if err != nil {
+		if err == sql.ErrNoRows {
+			return category, errors.New("category not found")
+		}
+		return category, err
+	}
+
+	return category, nil
+}
+
 func Create(category entities.Category) error {
 	// Validasi input
 	if category.Name == "" {
