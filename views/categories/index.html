@@ -67,53 +67,71 @@
                 <td class="text-center">{{$item.No}}</td>
                 <td>{{$item.Category.Name}}</td>
                 <td class="text-center">
-                  <a href="#" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editCategory">Edit</a>
-                  <button type="submit" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteCategory" >Delete</button>
+                  <!-- Tombol Edit dengan data atribut -->
+                  <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editCategory{{$item.Category.Id}}">
+                    Edit
+                  </button>
+
+                  <!-- Tombol Delete dengan data atribut -->
+                  <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteCategory{{$item.Category.Id}}">
+                    Delete
+                  </button>
                 </td>
               </tr>
 
               <!-- Edit Modal -->
-              <div class="modal fade" id="editCategory" tabindex="-1" aria-labelledby="editCategoryLabel" aria-hidden="true">
+              <div class="modal fade" id="editCategory{{$item.Category.Id}}" tabindex="-1" aria-labelledby="editCategoryLabel{{$item.Category.Id}}" aria-hidden="true">
                 <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h1 class="modal-title fs-5" id="editCategoryLabel">Edit Category</h1>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-                      <div class="mb-3">
-                        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-                          Error Alert
-                          <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                  <form method="POST" action="/categories/update">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="editCategoryLabel{{$item.Category.Id}}">
+                          Edit Category
+                        </h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <input type="hidden" name="id" value="{{$item.Category.Id}}">
+                        <div class="mb-3">
+                          <label for="editName{{$item.Category.Id}}" class="form-label">Category Name</label>
+                          <input type="text" class="form-control" id="editName{{$item.Category.Id}}" name="name" value="{{$item.Category.Name}}" placeholder="Edit category name">
                         </div>
                       </div>
-                        <label for="name" class="form-label">Category Name</label>
-                        <input type="text" class="form-control" id="name" name="name" placeholder="Edit category name">
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Save changes</button>
+                      </div>
                     </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                      <button type="button" class="btn btn-primary">Save changes</button>
-                    </div>
-                  </div>
+                  </form>
                 </div>
               </div>
 
-              <!-- Delete Modal -->
-              <div class="modal fade" id="deleteCategory" tabindex="-1" aria-labelledby="deleteCategoryLabel" aria-hidden="true">
+              <!-- Delete Modal untuk setiap kategori (unik berdasarkan ID) -->
+              <div class="modal fade" id="deleteCategory{{$item.Category.Id}}" tabindex="-1" aria-labelledby="deleteCategoryLabel{{$item.Category.Id}}" aria-hidden="true">
                 <div class="modal-dialog">
-                  <div class="modal-content">
-                    <div class="modal-header">
-                      <h1 class="modal-title fs-5" id="deleteCategoryLabel">Delete Category</h1>
-                      <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                  <form method="POST" action="/categories/delete">
+                    <div class="modal-content">
+                      <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="deleteCategoryLabel{{$item.Category.Id}}">
+                          Delete Category
+                        </h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                      </div>
+                      <div class="modal-body">
+                        <input type="hidden" name="id" value="{{$item.Category.Id}}">
+                        <h5>Are you sure you want to delete '{{$item.Category.Name}}' category?</h5>
+                        <p class="text-danger">
+                          <small>
+                            <strong>Warning:</strong> This action cannot be undone.
+                          </small>
+                        </p>
+                      </div>
+                      <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
+                      </div>
                     </div>
-                    <div class="modal-body">
-                        <h5>Are you sure want to delete 'name' category</h5>
-                    </div>
-                    <div class="modal-footer">
-                      <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                      <button type="button" class="btn btn-danger">Delete</button>
-                    </div>
-                  </div>
+                  </form>
                 </div>
               </div>
             {{ end }}
@@ -180,5 +198,25 @@
       });
     </script>
   {{ end }}
-  
+  {{ if .ErrorMessage }}
+    {{ if .EditId }}
+      {{ if and .ErrorMessage (not .EditId) }}
+        <script type="text/javascript">
+          document.addEventListener('DOMContentLoaded', function() {
+            // Auto show modal jika ada error dari update
+            const editModalId = "#editCategory{{.EditId}}";
+            const editModalElement = document.querySelector(editModalId);
+            if (editModalElement) {
+              const editModal = new bootstrap.Modal(editModalElement);
+              editModal.show();
+            }
+            
+            // Auto show modal jika ada error dari add
+            const addModal = new bootstrap.Modal(document.getElementById('addCategory'));
+            addModal.show();
+          });
+        </script>
+      {{ end }}
+    {{ end }}
+  {{ end }}
 {{ end }}

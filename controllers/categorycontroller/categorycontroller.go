@@ -5,6 +5,7 @@ import (
 	"electric-store/entities"
 	"electric-store/models/categorymodel"
 	"net/http"
+	"strconv"
 	"time"
 )
 
@@ -36,6 +37,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 	errorMessage := ""
 	categoryName := ""
 	validationError := ""
+	editId := ""
 
 	// Cek cookie untuk pesan
 	if cookie, err := r.Cookie("success"); err == nil {
@@ -70,6 +72,14 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		})
 	}
 
+	if cookie, err := r.Cookie("edit_id"); err == nil {
+		editId = cookie.Value
+		http.SetCookie(w, &http.Cookie{
+			Name:   "edit_id",
+			MaxAge: -1,
+		})
+	}
+
 	// Prepare template data
 	data := struct {
 		Title           string
@@ -79,6 +89,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		ErrorMessage    string
 		CategoryName    string
 		ValidationError string
+		EditId          string
 	}{
 		Title:           "Categories",
 		ActivePage:      "categories",
@@ -87,6 +98,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		ErrorMessage:    errorMessage,
 		CategoryName:    categoryName,
 		ValidationError: validationError,
+		EditId:          editId,
 	}
 
 	controllers.RenderTemplate(w, "categories", data)
@@ -155,6 +167,163 @@ func Store(w http.ResponseWriter, r *http.Request) {
 	http.SetCookie(w, &http.Cookie{
 		Name:     "success",
 		Value:    "Category " + name + " successfully created",
+		Path:     "/",
+		MaxAge:   5,
+		HttpOnly: true,
+	})
+
+	http.Redirect(w, r, "/categories", http.StatusSeeOther)
+}
+
+func Update(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Redirect(w, r, "/categories", http.StatusSeeOther)
+		return
+	}
+
+	r.ParseForm()
+
+	// Ambil ID dari form
+	idStr := r.FormValue("id")
+	name := r.FormValue("name")
+
+	// Convert ID ke integer
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.SetCookie(w, &http.Cookie{
+			Name:     "error",
+			Value:    "Invalid category ID",
+			Path:     "/",
+			MaxAge:   5,
+			HttpOnly: true,
+		})
+		http.Redirect(w, r, "/categories", http.StatusSeeOther)
+		return
+	}
+
+	// Validasi
+	if name == "" {
+		http.SetCookie(w, &http.Cookie{
+			Name:     "error",
+			Value:    "Category name cannot be empty",
+			Path:     "/",
+			MaxAge:   5,
+			HttpOnly: true,
+		})
+		http.SetCookie(w, &http.Cookie{
+			Name:     "category_name",
+			Value:    name,
+			Path:     "/",
+			MaxAge:   5,
+			HttpOnly: true,
+		})
+		http.SetCookie(w, &http.Cookie{
+			Name:     "edit_id",
+			Value:    idStr,
+			Path:     "/",
+			MaxAge:   5,
+			HttpOnly: true,
+		})
+		http.Redirect(w, r, "/categories", http.StatusSeeOther)
+		return
+	}
+
+	// Update category
+	category := entities.Category{
+		Name:      name,
+		UpdatedAt: time.Now(),
+	}
+
+	err = categorymodel.Update(id, category)
+	if err != nil {
+		var errorMessage string
+		if err == categorymodel.ErrDuplicateCategory {
+			errorMessage = "Category " + name + " already exists"
+		} else {
+			errorMessage = "Failed to update category: " + err.Error()
+		}
+
+		http.SetCookie(w, &http.Cookie{
+			Name:     "error",
+			Value:    errorMessage,
+			Path:     "/",
+			MaxAge:   5,
+			HttpOnly: true,
+		})
+		http.SetCookie(w, &http.Cookie{
+			Name:     "category_name",
+			Value:    name,
+			Path:     "/",
+			MaxAge:   5,
+			HttpOnly: true,
+		})
+		http.SetCookie(w, &http.Cookie{
+			Name:     "edit_id",
+			Value:    idStr,
+			Path:     "/",
+			MaxAge:   5,
+			HttpOnly: true,
+		})
+		http.Redirect(w, r, "/categories", http.StatusSeeOther)
+		return
+	}
+
+	// Set success message
+	http.SetCookie(w, &http.Cookie{
+		Name:     "success",
+		Value:    "Category " + name + " successfully updated",
+		Path:     "/",
+		MaxAge:   5,
+		HttpOnly: true,
+	})
+
+	http.Redirect(w, r, "/categories", http.StatusSeeOther)
+}
+
+func Delete(w http.ResponseWriter, r *http.Request) {
+	if r.Method != http.MethodPost {
+		http.Redirect(w, r, "/categories", http.StatusSeeOther)
+		return
+	}
+
+	r.ParseForm()
+
+	// Ambil ID dari form
+	idStr := r.FormValue("id")
+
+	// Convert ID ke integer
+	id, err := strconv.Atoi(idStr)
+	if err != nil {
+		http.SetCookie(w, &http.Cookie{
+			Name:     "error",
+			Value:    "Invalid category ID",
+			Path:     "/",
+			MaxAge:   5,
+			HttpOnly: true,
+		})
+		http.Redirect(w, r, "/categories", http.StatusSeeOther)
+		return
+	}
+
+	// Hapus category
+	err = categorymodel.Delete(id)
+	if err != nil {
+		errorMessage := "Failed to delete category: " + err.Error()
+		http.SetCookie(w, &http.Cookie{
+			Name:     "error",
+			Value:    errorMessage,
+			Path:     "/",
+			MaxAge:   5,
+			HttpOnly: true,
+		})
+		http.Redirect(w, r, "/categories", http.StatusSeeOther)
+		return
+	}
+
+	// Set success message
+	http.SetCookie(w, &http.Cookie{
+		Name:     "success",
+		Value:    "Category successfully deleted",
 		Path:     "/",
 		MaxAge:   5,
 		HttpOnly: true,
