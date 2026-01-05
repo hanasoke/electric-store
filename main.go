@@ -21,6 +21,8 @@ func main() {
 
 	http.HandleFunc("/", productcontroller.Index)
 	http.HandleFunc("/categories", categorycontroller.Index)
+	http.HandleFunc("/categories/update", categorycontroller.Update)
+	http.HandleFunc("/categories/delete", categorycontroller.Delete)
 
 	log.Println("Server running on port 7050")
 	http.ListenAndServe(":7050", nil)
