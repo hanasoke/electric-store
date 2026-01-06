@@ -2,6 +2,7 @@ package productcontroller
 
 import (
 	"net/http"
+	"strconv"
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
@@ -28,6 +29,14 @@ func Store(w http.ResponseWriter, r *http.Request) {
 	// Validasi input
 	if name == "" {
 		setErrorCookies(w, "Product name cannot be empty", name, categoryIDStr, priceStr, stockStr, description)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	// Parse category ID
+	categoryID, err := strconv.ParseUint(categoryIDStr, 10, 32)
+	if err != nil || categoryID == 0 {
+		setErrorCookies(w, "Please select a valid category", name, categoryIDStr, priceStr, stockStr, description)
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
@@ -73,6 +82,17 @@ func setErrorCookies(w http.ResponseWriter, errorMessage, name, categoryID, pric
 	http.SetCookie(w, &http.Cookie{
 		Name:     "description",
 		Value:    description,
+		Path:     "/",
+		MaxAge:   5,
+		HttpOnly: true,
+	})
+}
+
+func setErrorCookiesWithEdit(w http.ResponseWriter, errorMessage, name, categoryID, price, stock, description, editId string) {
+	setErrorCookies(w, errorMessage, name, categoryID, price, stock, description)
+	http.SetCookie(w, &http.Cookie{
+		Name:     "edit_id",
+		Value:    editId,
 		Path:     "/",
 		MaxAge:   5,
 		HttpOnly: true,
