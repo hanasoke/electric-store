@@ -1,6 +1,7 @@
 package productcontroller
 
 import (
+	"electric-store/models/productmodel"
 	"net/http"
 	"strconv"
 )
@@ -40,6 +41,26 @@ func Store(w http.ResponseWriter, r *http.Request) {
 		http.Redirect(w, r, "/", http.StatusSeeOther)
 		return
 	}
+
+	// Parse price
+	price, err := strconv.ParseInt(priceStr, 10, 32)
+	if err != nil || price == 0 {
+		setErrorCookies(w, "Price must be a positive integer", name, categoryIDStr, priceStr, stockStr, description)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	// Parse stock
+	stock, err := strconv.ParseInt(priceStr, 10, 32)
+	if err != nil || stock < 0 {
+		setErrorCookies(w, "Price must be a positive integer", name, categoryIDStr, priceStr, stockStr, description)
+		http.Redirect(w, r, "/", http.StatusSeeOther)
+		return
+	}
+
+	// Coba create product
+	err = productmodel.Create(product)
+
 }
 
 // Helper function untuk set error cookies
