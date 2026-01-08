@@ -5,6 +5,7 @@ import (
 	"electric-store/config"
 	"electric-store/entities"
 	"errors"
+	"time"
 )
 
 var ErrDuplicateProduct = errors.New("brand already exists")
@@ -101,4 +102,78 @@ func GetAll() ([]entities.Product, error) {
 	}
 
 	return products, nil
+}
+
+func Create(product *entities.Product) error {
+	// Check if product already exists
+	exists, err := IsProductExists(product.Name)
+	if err != nil {
+		return err
+	}
+	if exists {
+		return ErrDuplicateProduct
+	}
+
+	// Prepare SQL statement
+	query := `
+        INSERT INTO products 
+        (name, category_id, price, stock, description, created_at, updated_at) 
+        VALUES (?, ?, ?, ?, ?, ?, ?)
+    `
+
+	// Execute query
+	result, err := config.DB.Exec(
+		query,
+		product.Name,
+		product.Category.Id,
+		product.Price,
+		product.Stock,
+		product.Description,
+		time.Now(),
+		time.Now(),
+	)
+
+	if err != nil {
+		return err
+	}
+
+	// Get the last inserted ID
+	id, err := result.LastInsertId()
+	if err != nil {
+		return err
+	}
+
+	product.Id = uint(id)
+	return nil
+}
+
+// Tambahkan juga fungsi untuk mendapatkan semua kategori
+func GetAllCategories() ([]entities.Category, error) {
+	rows, err := config.DB.Query(`
+        SELECT id, name, created_at, updated_at 
+        FROM categories 
+        ORDER BY name ASC
+    `)
+
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var categories []entities.Category
+
+	for rows.Next() {
+		var category entities.Category
+		if err := rows.Scan(
+			&category.Id,
+			&category.Name,
+			&category.CreatedAt,
+			&category.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		categories = append(categories, category)
+	}
+
+	return categories, nil
 }
