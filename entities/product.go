@@ -1,6 +1,9 @@
 package entities
 
-import "time"
+import (
+	"database/sql"
+	"time"
+)
 
 type Product struct {
 	Id          uint
@@ -10,5 +13,5 @@ type Product struct {
 	Stock       int64
 	Description string
 	CreatedAt   time.Time
-	UpdatedAt   time.Time
+	UpdatedAt   sql.NullTime
 }

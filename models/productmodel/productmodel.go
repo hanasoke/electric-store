@@ -5,10 +5,36 @@ import (
 	"electric-store/config"
 	"electric-store/entities"
 	"errors"
+	"fmt"
 	"time"
 )
 
-var ErrDuplicateProduct = errors.New("brand already exists")
+var (
+	ErrDuplicateProduct = errors.New("brand already exists")
+	ErrEmptyName        = errors.New("product name cannot be empty")
+	ErrInvalidPrice     = errors.New("price must be greater than 0")
+	ErrInvalidStock     = errors.New("stock cannot be negative")
+)
+
+// Validation function
+func ValidateProduct(product *entities.Product) error {
+	// Check name
+	if product.Name == "" {
+		return ErrEmptyName
+	}
+
+	// Check price
+	if product.Price <= 0 {
+		return ErrInvalidPrice
+	}
+
+	// Check stock
+	if product.Stock < 0 {
+		return ErrInvalidStock
+	}
+
+	return nil
+}
 
 func IsProductExists(name string) (bool, error) {
 	var id uint
@@ -76,6 +102,7 @@ func GetAll() ([]entities.Product, error) {
 		var product entities.Product
 		var categoryID sql.NullInt64
 		var categoryName sql.NullString
+		var updatedAt sql.NullTime
 
 		if err := rows.Scan(
 			&product.Id,
@@ -92,6 +119,13 @@ func GetAll() ([]entities.Product, error) {
 			return nil, err
 		}
 
+		// Set UpdatedAt (handle null)
+		if updatedAt.Valid {
+			product.UpdatedAt = updatedAt
+		} else {
+			product.UpdatedAt = sql.NullTime{Valid: false}
+		}
+
 		// Set category data
 		if categoryID.Valid && categoryName.Valid {
 			product.Category.Id = uint(categoryID.Int64)
@@ -105,6 +139,11 @@ func GetAll() ([]entities.Product, error) {
 }
 
 func Create(product *entities.Product) error {
+	// Validate product data
+	if err := ValidateProduct(product); err != nil {
+		return err
+	}
+
 	// Check if product already exists
 	exists, err := IsProductExists(product.Name)
 	if err != nil {
@@ -118,8 +157,7 @@ func Create(product *entities.Product) error {
 	query := `
         INSERT INTO products 
         (name, category_id, price, stock, description, created_at, updated_at) 
-        VALUES (?, ?, ?, ?, ?, ?, ?)
-    `
+        VALUES (?, ?, ?, ?, ?, ?, NULL)`
 
 	// Execute query
 	result, err := config.DB.Exec(
@@ -134,7 +172,7 @@ func Create(product *entities.Product) error {
 	)
 
 	if err != nil {
-		return err
+		return fmt.Errorf("failed to create product: %v", err)
 	}
 
 	// Get the last inserted ID
