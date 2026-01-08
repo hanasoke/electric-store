@@ -55,107 +55,122 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            <table class="table table-striped">
-                <thead>
-                    <tr>
-                        <th class="text-center">No</th>
-                        <th>Name</th>
-                        <th>Category</th>
-                        <th>Price</th>
-                        <th>Stock</th>
-                        <th>Description</th>
-                        <th>Actions</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td class="text-center">1</td>
-                        <td>asd</td>
-                        <td>asd</td>
-                        <td>asd</td>
-                        <td>asd</td>
-                        <td>asd</td>
-                        <td>
-                            <!-- Tombol Edit dengan data atribut -->
-                            <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editProduct">
-                                Edit
-                            </button>
-                            <!-- Tombol Delete dengan data atribut -->
-                            <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteProduct">
-                                Delete
-                            </button>
-                        </td>
-                    </tr>
-                    <!-- Edit Product Form -->
-                    <div class="modal fade" id="editProduct" tabindex="-1" aria-labelledby="editProductLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                        <form method="POST" action="/products">
-                            <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="editProductLabel">Edit Product</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-                                    Error Message
-                                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                                    </div>
-                                </div>
-                                <div class="mb-3">
-                                <label for="name" class="form-label">Product Name</label>
-                                <input type="text" class="form-control" id="name" name="name" value="#" placeholder="Enter category name">
-                                </div>
-                                <div class="mb-3">
-                                <label for="category" class="form-label">Category</label>
-                                <input type="text" class="form-control" id="category" name="category" value="#" placeholder="Enter category name">
-                                </div>
-                                <div class="mb-3">
-                                <label for="price" class="form-label">Price</label>
-                                <input type="text" class="form-control" id="price" name="name" value="#" placeholder="Enter Price Name">
-                                </div>
-                                <div class="mb-3">
-                                <label for="stock" class="form-label">Stock</label>
-                                <input type="text" class="form-control" id="stock" name="name" value="#" placeholder="Enter Stock">
-                                </div>
-                                <div class="mb-3">
-                                <label for="description" class="form-label">Description</label>
-                                <textarea class="form-control" id="description" name="name"></textarea>
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Update</button>
-                            </div>
-                            </div>
-                        </form>
-                        </div>
-                    </div>
+            {{if .Products}}
+                <table class="table table-striped">
+                    <thead>
+                        <tr>
+                            <th class="text-center">No</th>
+                            <th>Name</th>
+                            <th>Category</th>
+                            <th>Price</th>
+                            <th>Stock</th>
+                            <th>Description</th>
+                            <th>Actions</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        {{range $index, $product := .Products}}
+                            <tr>
+                                <td class="text-center">{{add $index 1}}</td>
+                                <td>{{$product.Name}}</td>
+                                <td>
+                                    {{if $product.Category.Name }}
+                                        {{$product.Category.Name }}
+                                    {{else}}
+                                        <span class="text-muted">No Category</span>
+                                    {{end}}
+                                </td>
+                                <td>Rp {{printf "%.0f" (divide $product.Price 1.0)}}</td>
+                                <td>{{$product.Stock}}</td>
+                                <td>{{truncate $product.Description 50 }}</td>
+                                <td>
+                                    <!-- Tombol Edit dengan data atribut -->
+                                    <button type="button" class="btn btn-sm btn-warning" data-bs-toggle="modal" data-bs-target="#editProduct">
+                                        Edit
+                                    </button>
+                                    <!-- Tombol Delete dengan data atribut -->
+                                    <button type="button" class="btn btn-sm btn-danger" data-bs-toggle="modal" data-bs-target="#deleteProduct">
+                                        Delete
+                                    </button>
+                                </td>
+                            </tr>
+                        {{ end }}
+                    </tbody>
+                </table>
+            {{ else }}
+            <div class="alert alert-info">
+                No products found. Add your first product!
+            </div>
+            {{ end }}
+        </div>
+    </div>
 
-                    <!-- Delete Product Form -->
-                    <div class="modal fade" id="deleteProduct" tabindex="-1" aria-labelledby="deleteProductLabel" aria-hidden="true">
-                        <div class="modal-dialog">
-                        <form method="POST" action="/products">
-                            <div class="modal-content">
-                            <div class="modal-header">
-                                <h1 class="modal-title fs-5" id="deleteProductLabel">Delete Product</h1>
-                                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                            </div>
-                            <div class="modal-body">
-                                <div class="mb-3">
-                                    Are you sure want to delete this product ?
-                                </div>
-                            </div>
-                            <div class="modal-footer">
-                                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                                <button type="submit" class="btn btn-primary">Update</button>
-                            </div>
-                            </div>
-                        </form>
-                        </div>
+    <!-- Edit Product Form -->
+    <div class="modal fade" id="editProduct" tabindex="-1" aria-labelledby="editProductLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <form method="POST" action="/products">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="editProductLabel">Edit Product</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                    Error Message
+                    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
                     </div>
-                </tbody>
-            </table>
+                </div>
+                <div class="mb-3">
+                <label for="name" class="form-label">Product Name</label>
+                <input type="text" class="form-control" id="name" name="name" value="#" placeholder="Enter category name">
+                </div>
+                <div class="mb-3">
+                <label for="category" class="form-label">Category</label>
+                <input type="text" class="form-control" id="category" name="category" value="#" placeholder="Enter category name">
+                </div>
+                <div class="mb-3">
+                <label for="price" class="form-label">Price</label>
+                <input type="text" class="form-control" id="price" name="name" value="#" placeholder="Enter Price Name">
+                </div>
+                <div class="mb-3">
+                <label for="stock" class="form-label">Stock</label>
+                <input type="text" class="form-control" id="stock" name="name" value="#" placeholder="Enter Stock">
+                </div>
+                <div class="mb-3">
+                <label for="description" class="form-label">Description</label>
+                <textarea class="form-control" id="description" name="name"></textarea>
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+            </div>
+        </form>
+        </div>
+    </div>
+
+    <!-- Delete Product Form -->
+    <div class="modal fade" id="deleteProduct" tabindex="-1" aria-labelledby="deleteProductLabel" aria-hidden="true">
+        <div class="modal-dialog">
+        <form method="POST" action="/products">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="deleteProductLabel">Delete Product</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="mb-3">
+                    Are you sure want to delete this product ?
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="submit" class="btn btn-primary">Update</button>
+            </div>
+            </div>
+        </form>
         </div>
     </div>
 {{end}}

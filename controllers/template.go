@@ -4,12 +4,32 @@ import (
 	"log"
 	"net/http"
 	"text/template"
+	"time"
 )
 
 var templates map[string]*template.Template
 
 func InitTemplates() {
 	templates = make(map[string]*template.Template)
+
+	// Create template functions
+	funcMap := template.FuncMap{
+		"formatDate": func(t time.Time, layout string) string {
+			return t.Format(layout)
+		},
+		"truncate": func(s string, length int) string {
+			if len(s) <= length {
+				return s
+			}
+			return s[:length] + "..."
+		},
+		"divide": func(a, b int64) float64 {
+			return float64(a) / float64(b)
+		},
+		"add": func(a, b int) int {
+			return a + b
+		},
+	}
 
 	// Defire template patterns
 	templatePatterns := map[string][]string{
@@ -25,7 +45,7 @@ func InitTemplates() {
 
 	// Parse all templates
 	for name, files := range templatePatterns {
-		tmpl, err := template.ParseFiles(files...)
+		tmpl, err := template.New(name).Funcs(funcMap).ParseFiles(files...)
 		if err != nil {
 			log.Fatalf("Failed to parse template %s: %v", name, err)
 		}
