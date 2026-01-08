@@ -86,7 +86,7 @@
                                 <td>{{$product.Stock}}</td>
                                 <td>{{truncate $product.Description 50 }}</td>
                                 <td>
-                                    <!-- Tombol Edit dengan data atribut -->
+                                    <!-- Tombol Edit -->
                                     <button type="button" class="btn btn-sm btn-warning"
                                         data-bs-toggle="modal" data-bs-target="#editProduct"
                                         data-id="{{$product.Id}}"
@@ -139,13 +139,13 @@
                     <input type="hidden" id="edit_id" name="id">
                     <div class="mb-3">
                         <label for="edit_name" class="form-label">Product Name</label>
-                        <input type="text" class="form-control" id="edit_name" name="name" placeholder="Enter category name">
+                        <input type="text" class="form-control" id="edit_name" name="name">
                     </div>
                     <div class="mb-3">
                         <label for="edit_category_id" class="form-label">Category</label>
-                        <select class="form-control" id="edit_category_id" name="category_id">
+                        <input class="form-control" id="edit_category_id" name="category_id">
                             <!-- Categories will be loaded via Javascript -->
-                        </select>
+                        </input>
                     </div>
                     <div class="mb-3">
                         <label for="edit_price" class="form-label">Price</label>
@@ -185,11 +185,47 @@
                     </div>
                     <div class="modal-footer">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Update</button>
+                        <button type="submit" class="btn btn-danger">Delete</button>
                     </div>
                 </div>
             </form>
         </div>
     </div>
-{{end}}
 
+    <!-- Javascript untuk modal -->
+    <script>
+        // Handle Edit Modal 
+        document.getElementById('editProduct').addEventListener('show.bs.modal', function(event) {
+            let button = event.relatedTarget;
+            var id = button.getAttribute('data-id');
+            var name = button.getAttribute('data-name');
+            var categoryId = button.getAttribute('data-category-id');
+            var price = button.getAttribute('data-price');
+            var stock = button.getAttribute('data-stock');
+            var description = button.getAttribute('data-description');
+
+            var modal = this; 
+            modal.querySelector('#edit_id').value = id;
+            modal.querySelector('#edit_name').value = name;
+            modal.querySelector('#edit_price').value = price;
+            modal.querySelector('#edit_stock').value = stock;
+            modal.querySelector('#edit_description').value = description;
+
+            // Set category selection (you need to load categories first)
+            if(categoryId) {
+                modal.querySelector('#edit_category_id').value = categoryId;
+            }
+        });
+
+        //  Handle Delete Modal 
+        document.getElementById('deleteProduct').addEventListener('show.bs.modal', function(event) {
+            var button = event.relatedTarget;
+            var id = button.getAttribute('data-id');
+            var name = button.getAttribute('data-name');
+
+            var modal = this;
+            modal.querySelector('#delete_id').value = id;
+            modal.querySelector('#delete_product_name').textContent = name;
+        });
+    </script>
+{{end}}
