@@ -13,46 +13,51 @@
         <div class="modal-dialog">
             <form method="POST" action="/product/create">
                 <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="addProductLabel">Add Category</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <div class="mb-3 error-alert" style="display: none;">
-                        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-                            <span id="error-message"></span>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="addProductLabel">Add Category</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
+                        <div class="mb-3">
+                            <label for="name" class="form-label">Product Name <span class="text-danger">*</span></label>
+                            <input type="text" class="form-control" id="name" name="name" placeholder="Enter product name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="category_id" class="form-label">Category <span class="text-danger">*</span></label>
+                            <select class="form-select" id="category_id" name="category_id">
+                                <option value="">Select Category</option>
+                                {{range .Categories}}
+                                    <option value="{{.Id}}">{{.Name}}</option>
+                                {{end}}
+                            </select>
+                        </div>
+                        <div class="mb-3">
+                            <label for="price" class="form-label">Price <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="price" name="price" placeholder="Enter Price">
+                        </div>
+                        <div class="mb-3">
+                            <label for="stock" class="form-label">Stock  <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="stock" name="stock" placeholder="Enter Stock Quantity" min="0">
+                        </div>
+                        <div class="mb-3">
+                            <label for="description" class="form-label">Description</label>
+                            <textarea class="form-control" id="description" name="description" placeholder="Enter product description"></textarea>
                         </div>
                     </div>
-                    <div class="mb-3">
-                        <label for="name" class="form-label">Product Name</label>
-                        <input type="text" class="form-control" id="name" name="name" placeholder="Enter product name">
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Submit</button>
                     </div>
-                    <div class="mb-3">
-                        <label for="category" class="form-label">Category</label>
-                        <select class="form-control" id="category_id" name="category_id">
-                            <!-- Categories will be loaded via Javascript -->
-                        </select>
-                    </div>
-                    <div class="mb-3">
-                        <label for="price" class="form-label">Price</label>
-                        <input type="number" class="form-control" id="price" name="price" placeholder="Enter Price">
-                    </div>
-                    <div class="mb-3">
-                        <label for="stock" class="form-label">Stock</label>
-                        <input type="number" class="form-control" id="stock" name="stock" placeholder="Enter Stock Quantity">
-                    </div>
-                    <div class="mb-3">
-                        <label for="description" class="form-label">Description</label>
-                        <textarea class="form-control" id="description" name="description"></textarea>
-                    </div>
-                </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Submit</button>
-                </div>
                 </div>
             </form>
+        </div>
+    </div>
+    <div class="row">
+        <div class="col">
+            <div class="alert alert-success alert-dismissible fade show" role="alert">
+                <strong>Data Berhasil ditambahkan</strong>
+                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+            </div>
         </div>
     </div>
     <div class="row">
@@ -128,13 +133,6 @@
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
-
-                        <div class="mb-3 error-alert" style="display: none;">
-                            <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-                                <span id="edit-error-message"></span>
-                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                            </div>
-                        </div>
 
                         <input type="hidden" id="edit_id" name="id">
                         <div class="mb-3">
@@ -227,5 +225,24 @@
             modal.querySelector('#delete_id').value = id;
             modal.querySelector('#delete_product_name').textContent = name;
         });
+
+        // Form  validation for add product 
+        document.querySelector('form[action="/product/create"]').addEventListener('submit', function(e) {
+            var name = document.getElementById('name').value;
+            var price = document.getElementById('price').value;
+            var stock = document.getElementById('stock').value;
+
+            if(!name || !price || !stock) {
+                e.preventDefault();
+                alert('Please fill all required fields (*)');
+                return false;
+            }
+
+            if(parseInt(price) < 0 || parseInt(stock) < 0) {
+                e.preventDefault();
+                alert("Price and Stock cannot be negative");
+                return false;
+            }
+        })
     </script>
 {{end}}
