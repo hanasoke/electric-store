@@ -23,7 +23,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	// prepare template data
+	// Prepare template data
 	data := struct {
 		Title      string
 		ActivePage string
