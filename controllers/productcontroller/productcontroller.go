@@ -28,3 +28,7 @@ func Index(w http.ResponseWriter, r *http.Request) {
 
 	controllers.RenderTemplate(w, "products", data)
 }
+
+func Create(w http.ResponseWriter, r *http.Request) {
+
+}

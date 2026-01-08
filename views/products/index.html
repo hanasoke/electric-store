@@ -11,7 +11,7 @@
     <!-- Add Product Form -->
     <div class="modal fade" id="addProduct" tabindex="-1" aria-labelledby="addProductLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form method="POST" action="/products">
+            <form method="POST" action="/product/create">
                 <div class="modal-content">
                 <div class="modal-header">
                     <h1 class="modal-title fs-5" id="addProductLabel">Add Category</h1>
@@ -121,58 +121,58 @@
     <!-- Edit Product Form -->
     <div class="modal fade" id="editProduct" tabindex="-1" aria-labelledby="editProductLabel" aria-hidden="true">
         <div class="modal-dialog">
-        <form method="POST" action="/products/update">
-            <div class="modal-content">
-                <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="editProductLabel">Edit Product</h1>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
+            <form method="POST" action="/product/update">
+                <div class="modal-content">
+                    <div class="modal-header">
+                        <h1 class="modal-title fs-5" id="editProductLabel">Edit Product</h1>
+                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                    </div>
+                    <div class="modal-body">
 
-                    <div class="mb-3 error-alert" style="display: none;">
-                        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-                            <span id="edit-error-message"></span>
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        <div class="mb-3 error-alert" style="display: none;">
+                            <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                                <span id="edit-error-message"></span>
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
+                        </div>
+
+                        <input type="hidden" id="edit_id" name="id">
+                        <div class="mb-3">
+                            <label for="edit_name" class="form-label">Product Name</label>
+                            <input type="text" class="form-control" id="edit_name" name="name">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_category_id" class="form-label">Category</label>
+                            <input class="form-control" id="edit_category_id" name="category_id">
+                                <!-- Categories will be loaded via Javascript -->
+                            </input>
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_price" class="form-label">Price</label>
+                            <input type="number" class="form-control" id="edit_price" name="price" placeholder="Enter Price">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_stock" class="form-label">Stock</label>
+                            <input type="number" class="form-control" id="edit_stock" name="stock" value="#" placeholder="Enter Stock Quantity">
+                        </div>
+                        <div class="mb-3">
+                            <label for="edit_description" class="form-label">Description</label>
+                            <textarea class="form-control" id="edit_description" name="description" rows="3"></textarea>
                         </div>
                     </div>
-
-                    <input type="hidden" id="edit_id" name="id">
-                    <div class="mb-3">
-                        <label for="edit_name" class="form-label">Product Name</label>
-                        <input type="text" class="form-control" id="edit_name" name="name">
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_category_id" class="form-label">Category</label>
-                        <input class="form-control" id="edit_category_id" name="category_id">
-                            <!-- Categories will be loaded via Javascript -->
-                        </input>
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_price" class="form-label">Price</label>
-                        <input type="number" class="form-control" id="edit_price" name="price" placeholder="Enter Price">
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_stock" class="form-label">Stock</label>
-                        <input type="number" class="form-control" id="edit_stock" name="stock" value="#" placeholder="Enter Stock Quantity">
-                    </div>
-                    <div class="mb-3">
-                        <label for="edit_description" class="form-label">Description</label>
-                        <textarea class="form-control" id="edit_description" name="description" rows="3"></textarea>
+                    <div class="modal-footer">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                        <button type="submit" class="btn btn-primary">Update</button>
                     </div>
                 </div>
-                <div class="modal-footer">
-                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                    <button type="submit" class="btn btn-primary">Update</button>
-                </div>
-            </div>
-        </form>
+            </form>
         </div>
     </div>
 
     <!-- Delete Product Form -->
     <div class="modal fade" id="deleteProduct" tabindex="-1" aria-labelledby="deleteProductLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form method="POST" action="/products/delete">
+            <form method="POST" action="/product/delete">
                 <div class="modal-content">
                     <div class="modal-header">
                         <h1 class="modal-title fs-5" id="deleteProductLabel">Delete Product</h1>
