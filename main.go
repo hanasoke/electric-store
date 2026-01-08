@@ -20,8 +20,6 @@ func main() {
 	http.Handle("/static/", http.StripPrefix("/static/", fs))
 
 	http.HandleFunc("/", productcontroller.Index)
-	http.HandleFunc("/products/update", productcontroller.Update)
-	http.HandleFunc("/products/delete", productcontroller.Delete)
 
 	http.HandleFunc("/categories", categorycontroller.Index)
 	http.HandleFunc("/categories/update", categorycontroller.Update)
