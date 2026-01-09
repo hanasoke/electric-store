@@ -18,7 +18,7 @@
     </div>
     {{ end }}
 
-    <!-- Modal Form -->
+    <!-- Add Product Modal -->
     <div class="modal fade" id="addProduct" tabindex="-1" aria-labelledby="addProductLabel" aria-hidden="true">
         <div class="modal-dialog">
             <form method="POST" action="/products">
@@ -29,10 +29,10 @@
                     </div>
                     <div class="modal-body">
                         {{ if .ErrorMessage }}
-                        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
-                            {{ .ErrorMessage }}
-                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-                        </div>
+                            <div class="alert alert-danger alert-dismissible fade show mt-2" role="alert">
+                                {{ .ErrorMessage }}
+                                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                            </div>
                         {{ end }}
                         
                         <div class="mb-3">
@@ -105,7 +105,7 @@
                         <td class="text-center">{{ $item.No }}</td>
                         <td>{{ $item.Product.Name }}</td>
                         <td>{{ $item.Product.Category.Name }}</td>
-                        <td class="text-end">Rp {{ $item.Product.Price }}</td>
+                        <td class="text-end">Rp {{ formatNumber $item.Product.Price }}</td>
                         <td class="text-center">{{ $item.Product.Stock }}</td>
                         <td>{{ truncate $item.Product.Description 50 }}</td>
                         <td class="text-center">
@@ -135,17 +135,31 @@
                                     <div class="modal-body">
                                         <input type="hidden" name="id" value="{{ $item.Product.Id }}">
                                         
+                                        {{ if and (eq (printf "%d" $item.Product.Id) $.EditId) $.ErrorMessage }}
+                                        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                                            {{ $.ErrorMessage }}
+                                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                                        </div>
+                                        {{ end }}
+                                        
                                         <div class="mb-3">
                                             <label for="editName{{ $item.Product.Id }}" class="form-label">Product Name</label>
-                                            <input type="text" class="form-control" id="editName{{ $item.Product.Id }}" 
-                                                name="name" value="{{ $item.Product.Name }}">
+                                            <input type="text" class="form-control {{ if and (eq (printf "%d" $item.Product.Id) $.EditId) $.ErrorMessage }}is-invalid{{ end }}" 
+                                                id="editName{{ $item.Product.Id }}" 
+                                                name="name" value="{{ if and (eq (printf "%d" $item.Product.Id) $.EditId) $.ProductName }}{{ $.ProductName }}{{ else }}{{ $item.Product.Name }}{{ end }}">
                                         </div>
                                         
                                         <div class="mb-3">
                                             <label for="editCategoryId{{ $item.Product.Id }}" class="form-label">Category</label>
-                                            <select class="form-select" id="editCategoryId{{ $item.Product.Id }}" name="category_id">
+                                            <select class="form-select {{ if and (eq (printf "%d" $item.Product.Id) $.EditId) $.ErrorMessage }}is-invalid{{ end }}" 
+                                                id="editCategoryId{{ $item.Product.Id }}" name="category_id">
                                                 {{ range $.Categories }}
-                                                <option value="{{ .Id }}" {{ if eq .Id $item.Product.CategoryId }}selected{{ end }}>
+                                                <option value="{{ .Id }}" 
+                                                    {{ if and (eq (printf "%d" $item.Product.Id) $.EditId) $.CategoryId }}
+                                                        {{ if eq (printf "%d" .Id) $.CategoryId }}selected{{ end }}
+                                                    {{ else }}
+                                                        {{ if eq .Id $item.Product.CategoryId }}selected{{ end }}
+                                                    {{ end }}>
                                                     {{ .Name }}
                                                 </option>
                                                 {{ end }}
@@ -154,20 +168,22 @@
                                         
                                         <div class="mb-3">
                                             <label for="editPrice{{ $item.Product.Id }}" class="form-label">Price</label>
-                                            <input type="number" class="form-control" id="editPrice{{ $item.Product.Id }}" 
-                                                name="price" value="{{ $item.Product.Price }}" min="1">
+                                            <input type="number" class="form-control {{ if and (eq (printf "%d" $item.Product.Id) $.EditId) $.ErrorMessage }}is-invalid{{ end }}" 
+                                                id="editPrice{{ $item.Product.Id }}" 
+                                                name="price" value="{{ if and (eq (printf "%d" $item.Product.Id) $.EditId) $.Price }}{{ $.Price }}{{ else }}{{ $item.Product.Price }}{{ end }}" min="1">
                                         </div>
                                         
                                         <div class="mb-3">
                                             <label for="editStock{{ $item.Product.Id }}" class="form-label">Stock</label>
-                                            <input type="number" class="form-control" id="editStock{{ $item.Product.Id }}" 
-                                                name="stock" value="{{ $item.Product.Stock }}" min="0">
+                                            <input type="number" class="form-control {{ if and (eq (printf "%d" $item.Product.Id) $.EditId) $.ErrorMessage }}is-invalid{{ end }}" 
+                                                id="editStock{{ $item.Product.Id }}" 
+                                                name="stock" value="{{ if and (eq (printf "%d" $item.Product.Id) $.EditId) $.Stock }}{{ $.Stock }}{{ else }}{{ $item.Product.Stock }}{{ end }}" min="0">
                                         </div>
                                         
                                         <div class="mb-3">
                                             <label for="editDescription{{ $item.Product.Id }}" class="form-label">Description</label>
                                             <textarea class="form-control" id="editDescription{{ $item.Product.Id }}" 
-                                                name="description" rows="3">{{ $item.Product.Description }}</textarea>
+                                                name="description" rows="3">{{ if and (eq (printf "%d" $item.Product.Id) $.EditId) $.Description }}{{ $.Description }}{{ else }}{{ $item.Product.Description }}{{ end }}</textarea>
                                         </div>
                                     </div>
                                     <div class="modal-footer">
@@ -223,29 +239,50 @@
     </div>
     {{ end }}
 
-    {{ if or .ErrorMessage .ValidationError }}
     <script type="text/javascript">
         document.addEventListener('DOMContentLoaded', function() {
-            const modalElement = document.getElementById('addProduct');
+            // Hanya tampilkan modal Add Product jika ada error dari ADD
+            const addModalElement = document.getElementById('addProduct');
+            const hasAddError = {{ if and (not .EditId) .ErrorMessage }}true{{ else }}false{{ end }};
             
-            if (modalElement) {
-                const modal = new bootstrap.Modal(modalElement);
-                modal.show();
+            if (addModalElement && hasAddError) {
+                const addModal = new bootstrap.Modal(addModalElement);
+                addModal.show();
+            }
+            
+            // Tampilkan modal Edit Product jika ada error dari EDIT
+            const editId = "{{ .EditId }}";
+            if (editId) {
+                const editModalId = "#editProduct" + editId;
+                const editModalElement = document.querySelector(editModalId);
+                if (editModalElement) {
+                    const editModal = new bootstrap.Modal(editModalElement);
+                    editModal.show();
+                }
+            }
+            
+            // Reset form saat modal Add ditutup
+            if (addModalElement) {
+                addModalElement.addEventListener('hidden.bs.modal', function () {
+                    // Reset form fields
+                    const form = this.querySelector('form');
+                    if (form) {
+                        form.reset();
+                    }
+                    
+                    // Hapus error styling
+                    const inputs = this.querySelectorAll('.is-invalid');
+                    inputs.forEach(input => {
+                        input.classList.remove('is-invalid');
+                    });
+                    
+                    // Hapus alert error
+                    const alert = this.querySelector('.alert-danger');
+                    if (alert) {
+                        alert.remove();
+                    }
+                });
             }
         });
     </script>
-    {{ end }}
-    
-    {{ if .EditId }}
-    <script type="text/javascript">
-        document.addEventListener('DOMContentLoaded', function() {
-            const editModalId = "#editProduct{{ .EditId }}";
-            const editModalElement = document.querySelector(editModalId);
-            if (editModalElement) {
-                const editModal = new bootstrap.Modal(editModalElement);
-                editModal.show();
-            }
-        });
-    </script>
-    {{ end }}
 {{end}}

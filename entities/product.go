@@ -7,7 +7,7 @@ import (
 type Product struct {
 	Id          uint
 	Name        string
-	CategoryId  uint
+	CategoryId  uint // Tambahkan ini
 	Category    Category
 	Price       int64
 	Stock       int64

@@ -11,7 +11,8 @@ import (
 )
 
 func Index(w http.ResponseWriter, r *http.Request) {
-	if r.Method == http.MethodPost {
+	// Hanya handle POST untuk store (add)
+	if r.Method == http.MethodPost && r.URL.Path == "/products" {
 		Store(w, r)
 		return
 	}
@@ -248,6 +249,7 @@ func Store(w http.ResponseWriter, r *http.Request) {
 	http.Redirect(w, r, "/products", http.StatusSeeOther)
 }
 
+// Update function
 func Update(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Redirect(w, r, "/products", http.StatusSeeOther)
@@ -378,9 +380,19 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		HttpOnly: true,
 	})
 
+	// Hapus cookies edit_id setelah sukses
+	http.SetCookie(w, &http.Cookie{
+		Name:     "edit_id",
+		Value:    "",
+		Path:     "/",
+		MaxAge:   -1,
+		HttpOnly: true,
+	})
+
 	http.Redirect(w, r, "/products", http.StatusSeeOther)
 }
 
+// Update Delete function
 func Delete(w http.ResponseWriter, r *http.Request) {
 	if r.Method != http.MethodPost {
 		http.Redirect(w, r, "/products", http.StatusSeeOther)

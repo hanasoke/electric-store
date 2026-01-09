@@ -221,7 +221,7 @@ func Create(product entities.Product) error {
             updated_at
         ) VALUES (?, ?, ?, ?, ?, ?, ?)`,
 		product.Name,
-		product.CategoryId,
+		product.CategoryId, // Pastikan menggunakan CategoryId
 		product.Price,
 		product.Stock,
 		product.Description,
