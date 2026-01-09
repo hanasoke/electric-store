@@ -28,11 +28,8 @@
 
                         <div class="mb-3">
                             <label for="category_id" class="form-label">Category <span class="text-danger">*</span></label>
-                            <select class="form-select is-invalid" id="category_id" name="category_id">
+                            <select class="form-select" id="category_id" name="category_id">
                                 <option value="">Select Category</option>
-                                {{range .Categories}}
-                                    <option value="{{.Id}}">{{.Name}}</option>
-                                {{end}}
                             </select>
                             <div id="category_id" class="invalid-feedback">
                                 Error 
@@ -78,64 +75,22 @@
     </div>
     <div class="row">
         <div class="col-md-12">
-            {{if .Products}}
-                <table class="table table-striped">
-                    <thead>
-                        <tr>
-                            <th class="text-center">No</th>
-                            <th>Name</th>
-                            <th>Category</th>
-                            <th>Price</th>
-                            <th>Stock</th>
-                            <th>Description</th>
-                            <th>Actions</th>
-                        </tr>
-                    </thead>
-                    <tbody>
-                        {{range $index, $product := .Products}}
-                            <tr>
-                                <td class="text-center">{{add $index 1}}</td>
-                                <td>{{$product.Name}}</td>
-                                <td>
-                                    {{if $product.Category.Name }}
-                                        {{$product.Category.Name }}
-                                    {{else}}
-                                        <span class="text-muted">No Category</span>
-                                    {{end}}
-                                </td>
-                                <td>Rp {{printf "%.0f" (divide $product.Price 1.0)}}</td>
-                                <td>{{$product.Stock}}</td>
-                                <td>{{truncate $product.Description 50 }}</td>
-                                <td>
-                                    <!-- Tombol Edit -->
-                                    <button type="button" class="btn btn-sm btn-warning"
-                                        data-bs-toggle="modal" data-bs-target="#editProduct"
-                                        data-id="{{$product.Id}}"
-                                        data-name="{{$product.Name}}"
-                                        data-category-id="{{$product.Category.Id}}"
-                                        data-price="{{$product.Price}}"
-                                        data-stock="{{$product.Stock}}"
-                                        data-description="{{$product.Description}}">
-                                        Edit
-                                    </button>
-                                    <!-- Tombol Delete dengan data atribut -->
-                                    <button type="button" class="btn btn-sm btn-danger" 
-                                        data-bs-toggle="modal" 
-                                        data-bs-target="#deleteProduct"
-                                        data-id="{{$product.Id}}"
-                                        data-name="{{$product.Name}}">
-                                        Delete
-                                    </button>
-                                </td>
-                            </tr>
-                        {{ end }}
-                    </tbody>
-                </table>
-            {{ else }}
-            <div class="alert alert-info">
-                No products found. Add your first product!
-            </div>
-            {{ end }}
+            <table class="table table-striped">
+                <thead>
+                    <tr>
+                        <th class="text-center">No</th>
+                        <th>Name</th>
+                        <th>Category</th>
+                        <th>Price</th>
+                        <th>Stock</th>
+                        <th>Description</th>
+                        <th>Actions</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    
+                </tbody>
+            </table>
         </div>
     </div>
 
@@ -205,60 +160,4 @@
             </form>
         </div>
     </div>
-
-    <!-- Javascript untuk modal -->
-    <script>
-        // Handle Edit Modal 
-        document.getElementById('editProduct').addEventListener('show.bs.modal', function(event) {
-            let button = event.relatedTarget;
-            var id = button.getAttribute('data-id');
-            var name = button.getAttribute('data-name');
-            var categoryId = button.getAttribute('data-category-id');
-            var price = button.getAttribute('data-price');
-            var stock = button.getAttribute('data-stock');
-            var description = button.getAttribute('data-description');
-
-            var modal = this; 
-            modal.querySelector('#edit_id').value = id;
-            modal.querySelector('#edit_name').value = name;
-            modal.querySelector('#edit_price').value = price;
-            modal.querySelector('#edit_stock').value = stock;
-            modal.querySelector('#edit_description').value = description;
-
-            // Set category selection (you need to load categories first)
-            if(categoryId) {
-                modal.querySelector('#edit_category_id').value = categoryId;
-            }
-        });
-
-        //  Handle Delete Modal 
-        document.getElementById('deleteProduct').addEventListener('show.bs.modal', function(event) {
-            var button = event.relatedTarget;
-            var id = button.getAttribute('data-id');
-            var name = button.getAttribute('data-name');
-
-            var modal = this;
-            modal.querySelector('#delete_id').value = id;
-            modal.querySelector('#delete_product_name').textContent = name;
-        });
-
-        // Form  validation for add product 
-        document.querySelector('form[action="/product/create"]').addEventListener('submit', function(e) {
-            var name = document.getElementById('name').value;
-            var price = document.getElementById('price').value;
-            var stock = document.getElementById('stock').value;
-
-            if(!name || !price || !stock) {
-                e.preventDefault();
-                alert('Please fill all required fields (*)');
-                return false;
-            }
-
-            if(parseInt(price) < 0 || parseInt(stock) < 0) {
-                e.preventDefault();
-                alert("Price and Stock cannot be negative");
-                return false;
-            }
-        })
-    </script>
 {{end}}
