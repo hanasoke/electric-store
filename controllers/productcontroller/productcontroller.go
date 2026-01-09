@@ -203,8 +203,8 @@ func Store(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if stock < 0 {
-		setProductCookies(w, name, categoryIdStr, priceStr, stockStr, description, "Stock cannot be negative")
+	if stock <= 0 {
+		setProductCookies(w, name, categoryIdStr, priceStr, stockStr, description, "Stock cannot be zero")
 		http.Redirect(w, r, "/products", http.StatusSeeOther)
 		return
 	}
@@ -325,8 +325,8 @@ func Update(w http.ResponseWriter, r *http.Request) {
 		return
 	}
 
-	if stock < 0 {
-		setProductCookies(w, name, categoryIdStr, priceStr, stockStr, description, "Stock cannot be negative")
+	if stock <= 0 {
+		setProductCookies(w, name, categoryIdStr, priceStr, stockStr, description, "Stock cannot be zero")
 		http.SetCookie(w, &http.Cookie{
 			Name:     "edit_id",
 			Value:    idStr,

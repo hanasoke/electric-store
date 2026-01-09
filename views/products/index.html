@@ -37,14 +37,14 @@
                         
                         <div class="mb-3">
                             <label for="name" class="form-label">Product Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control {{ if .ValidationError }}is-invalid{{ end }}" 
+                            <input type="text" class="form-control" 
                                 id="name" name="name" value="{{ .ProductName }}" 
                                 placeholder="Enter product name">
                         </div>
 
                         <div class="mb-3">
                             <label for="category_id" class="form-label">Category <span class="text-danger">*</span></label>
-                            <select class="form-select {{ if .ValidationError }}is-invalid{{ end }}" 
+                            <select class="form-select" 
                                 id="category_id" name="category_id">
                                 <option value="">Select Category</option>
                                 {{ range .Categories }}
@@ -57,14 +57,14 @@
                         
                         <div class="mb-3">
                             <label for="price" class="form-label">Price <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control {{ if .ValidationError }}is-invalid{{ end }}" 
+                            <input type="number" class="form-control" 
                                 id="price" name="price" value="{{ .Price }}" 
-                                placeholder="Enter Price" min="1">
+                                placeholder="Enter Price" min="0">
                         </div>
                         
                         <div class="mb-3">
                             <label for="stock" class="form-label">Stock <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control {{ if .ValidationError }}is-invalid{{ end }}" 
+                            <input type="number" class="form-control" 
                                 id="stock" name="stock" value="{{ .Stock }}" 
                                 placeholder="Enter Stock Quantity" min="0">
                         </div>
@@ -144,14 +144,14 @@
                                         
                                         <div class="mb-3">
                                             <label for="editName{{ $item.Product.Id }}" class="form-label">Product Name</label>
-                                            <input type="text" class="form-control {{ if and (eq (printf "%d" $item.Product.Id) $.EditId) $.ErrorMessage }}is-invalid{{ end }}" 
+                                            <input type="text" class="form-control" 
                                                 id="editName{{ $item.Product.Id }}" 
                                                 name="name" value="{{ if and (eq (printf "%d" $item.Product.Id) $.EditId) $.ProductName }}{{ $.ProductName }}{{ else }}{{ $item.Product.Name }}{{ end }}">
                                         </div>
                                         
                                         <div class="mb-3">
                                             <label for="editCategoryId{{ $item.Product.Id }}" class="form-label">Category</label>
-                                            <select class="form-select {{ if and (eq (printf "%d" $item.Product.Id) $.EditId) $.ErrorMessage }}is-invalid{{ end }}" 
+                                            <select class="form-select" 
                                                 id="editCategoryId{{ $item.Product.Id }}" name="category_id">
                                                 {{ range $.Categories }}
                                                 <option value="{{ .Id }}" 
@@ -168,14 +168,14 @@
                                         
                                         <div class="mb-3">
                                             <label for="editPrice{{ $item.Product.Id }}" class="form-label">Price</label>
-                                            <input type="number" class="form-control {{ if and (eq (printf "%d" $item.Product.Id) $.EditId) $.ErrorMessage }}is-invalid{{ end }}" 
+                                            <input type="number" class="form-control" 
                                                 id="editPrice{{ $item.Product.Id }}" 
-                                                name="price" value="{{ if and (eq (printf "%d" $item.Product.Id) $.EditId) $.Price }}{{ $.Price }}{{ else }}{{ $item.Product.Price }}{{ end }}" min="1">
+                                                name="price" value="{{ if and (eq (printf "%d" $item.Product.Id) $.EditId) $.Price }}{{ $.Price }}{{ else }}{{ $item.Product.Price }}{{ end }}" min="0">
                                         </div>
                                         
                                         <div class="mb-3">
                                             <label for="editStock{{ $item.Product.Id }}" class="form-label">Stock</label>
-                                            <input type="number" class="form-control {{ if and (eq (printf "%d" $item.Product.Id) $.EditId) $.ErrorMessage }}is-invalid{{ end }}" 
+                                            <input type="number" class="form-control" 
                                                 id="editStock{{ $item.Product.Id }}" 
                                                 name="stock" value="{{ if and (eq (printf "%d" $item.Product.Id) $.EditId) $.Stock }}{{ $.Stock }}{{ else }}{{ $item.Product.Stock }}{{ end }}" min="0">
                                         </div>
@@ -269,12 +269,6 @@
                     if (form) {
                         form.reset();
                     }
-                    
-                    // Hapus error styling
-                    const inputs = this.querySelectorAll('.is-invalid');
-                    inputs.forEach(input => {
-                        input.classList.remove('is-invalid');
-                    });
                     
                     // Hapus alert error
                     const alert = this.querySelector('.alert-danger');
