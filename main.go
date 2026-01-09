@@ -21,8 +21,8 @@ func main() {
 
 	http.HandleFunc("/", productcontroller.Index)
 	http.HandleFunc("/products", productcontroller.Index)
-	// http.HandleFunc("/product/update", productcontroller.Update)
-	// http.HandleFunc("/product/delete", productcontroller.Delete)
+	http.HandleFunc("/product/update", productcontroller.Update)
+	http.HandleFunc("/product/delete", productcontroller.Delete)
 
 	http.HandleFunc("/categories", categorycontroller.Index)
 	http.HandleFunc("/categories/update", categorycontroller.Update)

@@ -3,6 +3,7 @@ package controllers
 import (
 	"log"
 	"net/http"
+	"strconv"
 	"text/template"
 	"time"
 )
@@ -28,6 +29,18 @@ func InitTemplates() {
 		},
 		"add": func(a, b int) int {
 			return a + b
+		},
+		"formatNumber": func(n int64) string {
+			// Format number with thousand separators
+			s := strconv.FormatInt(n, 10)
+			var result string
+			for i, c := range s {
+				if i > 0 && (len(s)-i)%3 == 0 {
+					result += "."
+				}
+				result += string(c)
+			}
+			return result
 		},
 	}
 

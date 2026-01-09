@@ -7,6 +7,7 @@ import (
 type Product struct {
 	Id          uint
 	Name        string
+	CategoryId  uint
 	Category    Category
 	Price       int64
 	Stock       int64

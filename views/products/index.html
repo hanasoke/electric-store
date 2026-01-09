@@ -4,57 +4,75 @@
             <h1 class="float-start">Products List</h1>
         </div>
         <div class="col-6">
-            <a href="#" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#addProduct">Add New Product</a>
+            <button type="button" class="btn btn-primary float-end" data-bs-toggle="modal" data-bs-target="#addProduct">
+                Add New Product
+            </button>
         </div>
     </div>
 
-    <!-- Add Product Form -->
+    <!-- Alert Messages -->
+    {{ if .SuccessMessage }}
+    <div class="alert alert-success alert-dismissible fade show mt-2" role="alert">
+        {{ .SuccessMessage }}
+        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+    </div>
+    {{ end }}
+
+    <!-- Modal Form -->
     <div class="modal fade" id="addProduct" tabindex="-1" aria-labelledby="addProductLabel" aria-hidden="true">
         <div class="modal-dialog">
-            <form method="POST" action="/product/create">
+            <form method="POST" action="/products">
                 <div class="modal-content">
                     <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="addProductLabel">Add Category</h1>
+                        <h1 class="modal-title fs-5" id="addProductLabel">Add Product</h1>
                         <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                     </div>
                     <div class="modal-body">
+                        {{ if .ErrorMessage }}
+                        <div class="alert alert-danger alert-dismissible fade show mt-3" role="alert">
+                            {{ .ErrorMessage }}
+                            <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                        </div>
+                        {{ end }}
+                        
                         <div class="mb-3">
                             <label for="name" class="form-label">Product Name <span class="text-danger">*</span></label>
-                            <input type="text" class="form-control is-invalid" id="name" name="name" placeholder="Enter product name">
-                            <div id="name" class="invalid-feedback">
-                                Error 
-                            </div>
+                            <input type="text" class="form-control {{ if .ValidationError }}is-invalid{{ end }}" 
+                                id="name" name="name" value="{{ .ProductName }}" 
+                                placeholder="Enter product name">
                         </div>
 
                         <div class="mb-3">
                             <label for="category_id" class="form-label">Category <span class="text-danger">*</span></label>
-                            <select class="form-select" id="category_id" name="category_id">
+                            <select class="form-select {{ if .ValidationError }}is-invalid{{ end }}" 
+                                id="category_id" name="category_id">
                                 <option value="">Select Category</option>
+                                {{ range .Categories }}
+                                <option value="{{ .Id }}" {{ if eq (printf "%d" .Id) $.CategoryId }}selected{{ end }}>
+                                    {{ .Name }}
+                                </option>
+                                {{ end }}
                             </select>
-                            <div id="category_id" class="invalid-feedback">
-                                Error 
-                            </div>
                         </div>
+                        
                         <div class="mb-3">
                             <label for="price" class="form-label">Price <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control is-invalid" id="price" name="price" placeholder="Enter Price" min="0">
-                            <div id="price" class="invalid-feedback">
-                                Error 
-                            </div>
+                            <input type="number" class="form-control {{ if .ValidationError }}is-invalid{{ end }}" 
+                                id="price" name="price" value="{{ .Price }}" 
+                                placeholder="Enter Price" min="1">
                         </div>
+                        
                         <div class="mb-3">
-                            <label for="stock" class="form-label">Stock  <span class="text-danger">*</span></label>
-                            <input type="number" class="form-control is-invalid" id="stock" name="stock" placeholder="Enter Stock Quantity" min="0">
-                            <div id="stock" class="invalid-feedback">
-                                Error 
-                            </div>
+                            <label for="stock" class="form-label">Stock <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control {{ if .ValidationError }}is-invalid{{ end }}" 
+                                id="stock" name="stock" value="{{ .Stock }}" 
+                                placeholder="Enter Stock Quantity" min="0">
                         </div>
+                        
                         <div class="mb-3">
                             <label for="description" class="form-label">Description</label>
-                            <textarea class="form-control is-invalid" id="description" name="description" placeholder="Enter product description"></textarea>
-                            <div id="description" class="invalid-feedback">
-                                Error 
-                            </div>
+                            <textarea class="form-control" id="description" name="description" 
+                                placeholder="Enter product description">{{ .Description }}</textarea>
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -65,15 +83,9 @@
             </form>
         </div>
     </div>
-    <div class="row">
-        <div class="col">
-            <div class="alert alert-success alert-dismissible fade show" role="alert">
-                <strong>Data Berhasil ditambahkan</strong>
-                <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
-            </div>
-        </div>
-    </div>
-    <div class="row">
+
+    {{ if .Products }}
+    <div class="row mt-4">
         <div class="col-md-12">
             <table class="table table-striped">
                 <thead>
@@ -81,83 +93,159 @@
                         <th class="text-center">No</th>
                         <th>Name</th>
                         <th>Category</th>
-                        <th>Price</th>
-                        <th>Stock</th>
+                        <th class="text-end">Price</th>
+                        <th class="text-center">Stock</th>
                         <th>Description</th>
-                        <th>Actions</th>
+                        <th class="text-center">Actions</th>
                     </tr>
                 </thead>
                 <tbody>
-                    
+                    {{ range $index, $item := .Products }}
+                    <tr>
+                        <td class="text-center">{{ $item.No }}</td>
+                        <td>{{ $item.Product.Name }}</td>
+                        <td>{{ $item.Product.Category.Name }}</td>
+                        <td class="text-end">Rp {{ $item.Product.Price }}</td>
+                        <td class="text-center">{{ $item.Product.Stock }}</td>
+                        <td>{{ truncate $item.Product.Description 50 }}</td>
+                        <td class="text-center">
+                            <button type="button" class="btn btn-sm btn-warning" 
+                                data-bs-toggle="modal" data-bs-target="#editProduct{{ $item.Product.Id }}">
+                                Edit
+                            </button>
+                            <button type="button" class="btn btn-sm btn-danger" 
+                                data-bs-toggle="modal" data-bs-target="#deleteProduct{{ $item.Product.Id }}">
+                                Delete
+                            </button>
+                        </td>
+                    </tr>
+
+                    <!-- Edit Modal -->
+                    <div class="modal fade" id="editProduct{{ $item.Product.Id }}" tabindex="-1" 
+                        aria-labelledby="editProductLabel{{ $item.Product.Id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <form method="POST" action="/products/update">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="editProductLabel{{ $item.Product.Id }}">
+                                            Edit Product
+                                        </h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="id" value="{{ $item.Product.Id }}">
+                                        
+                                        <div class="mb-3">
+                                            <label for="editName{{ $item.Product.Id }}" class="form-label">Product Name</label>
+                                            <input type="text" class="form-control" id="editName{{ $item.Product.Id }}" 
+                                                name="name" value="{{ $item.Product.Name }}">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="editCategoryId{{ $item.Product.Id }}" class="form-label">Category</label>
+                                            <select class="form-select" id="editCategoryId{{ $item.Product.Id }}" name="category_id">
+                                                {{ range $.Categories }}
+                                                <option value="{{ .Id }}" {{ if eq .Id $item.Product.CategoryId }}selected{{ end }}>
+                                                    {{ .Name }}
+                                                </option>
+                                                {{ end }}
+                                            </select>
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="editPrice{{ $item.Product.Id }}" class="form-label">Price</label>
+                                            <input type="number" class="form-control" id="editPrice{{ $item.Product.Id }}" 
+                                                name="price" value="{{ $item.Product.Price }}" min="1">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="editStock{{ $item.Product.Id }}" class="form-label">Stock</label>
+                                            <input type="number" class="form-control" id="editStock{{ $item.Product.Id }}" 
+                                                name="stock" value="{{ $item.Product.Stock }}" min="0">
+                                        </div>
+                                        
+                                        <div class="mb-3">
+                                            <label for="editDescription{{ $item.Product.Id }}" class="form-label">Description</label>
+                                            <textarea class="form-control" id="editDescription{{ $item.Product.Id }}" 
+                                                name="description" rows="3">{{ $item.Product.Description }}</textarea>
+                                        </div>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                                        <button type="submit" class="btn btn-primary">Update</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+
+                    <!-- Delete Modal -->
+                    <div class="modal fade" id="deleteProduct{{ $item.Product.Id }}" tabindex="-1" 
+                        aria-labelledby="deleteProductLabel{{ $item.Product.Id }}" aria-hidden="true">
+                        <div class="modal-dialog">
+                            <form method="POST" action="/products/delete">
+                                <div class="modal-content">
+                                    <div class="modal-header">
+                                        <h1 class="modal-title fs-5" id="deleteProductLabel{{ $item.Product.Id }}">
+                                            Delete Product
+                                        </h1>
+                                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                                    </div>
+                                    <div class="modal-body">
+                                        <input type="hidden" name="id" value="{{ $item.Product.Id }}">
+                                        <h5>Are you sure you want to delete '{{ $item.Product.Name }}' product?</h5>
+                                        <p class="text-danger">
+                                            <small>
+                                                <strong>Warning:</strong> This action cannot be undone.
+                                            </small>
+                                        </p>
+                                    </div>
+                                    <div class="modal-footer">
+                                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Cancel</button>
+                                        <button type="submit" class="btn btn-danger">Delete</button>
+                                    </div>
+                                </div>
+                            </form>
+                        </div>
+                    </div>
+                    {{ end }}
                 </tbody>
             </table>
         </div>
     </div>
-
-    <!-- Edit Product Form -->
-    <div class="modal fade" id="editProduct" tabindex="-1" aria-labelledby="editProductLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <form method="POST" action="/product/update">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="editProductLabel">Edit Product</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body">
-
-                        <input type="hidden" id="edit_id" name="id">
-                        <div class="mb-3">
-                            <label for="edit_name" class="form-label">Product Name</label>
-                            <input type="text" class="form-control" id="edit_name" name="name">
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_category_id" class="form-label">Category</label>
-                            <input class="form-control" id="edit_category_id" name="category_id">
-                                <!-- Categories will be loaded via Javascript -->
-                            </input>
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_price" class="form-label">Price</label>
-                            <input type="number" class="form-control" id="edit_price" name="price" placeholder="Enter Price">
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_stock" class="form-label">Stock</label>
-                            <input type="number" class="form-control" id="edit_stock" name="stock" value="#" placeholder="Enter Stock Quantity">
-                        </div>
-                        <div class="mb-3">
-                            <label for="edit_description" class="form-label">Description</label>
-                            <textarea class="form-control" id="edit_description" name="description" rows="3"></textarea>
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-primary">Update</button>
-                    </div>
-                </div>
-            </form>
+    {{ else }}
+    <div class="row mt-4">
+        <div class="col-md-12">
+            <div class="alert alert-info">
+                No products found.
+            </div>
         </div>
     </div>
+    {{ end }}
 
-    <!-- Delete Product Form -->
-    <div class="modal fade" id="deleteProduct" tabindex="-1" aria-labelledby="deleteProductLabel" aria-hidden="true">
-        <div class="modal-dialog">
-            <form method="POST" action="/product/delete">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h1 class="modal-title fs-5" id="deleteProductLabel">Delete Product</h1>
-                        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                    </div>
-                    <div class="modal-body" id="delete_id" name="id">
-                        <div class="mb-3">
-                            Are you sure want to delete this product <span id="delete_product_name"></span> ?
-                        </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
-                        <button type="submit" class="btn btn-danger">Delete</button>
-                    </div>
-                </div>
-            </form>
-        </div>
-    </div>
+    {{ if or .ErrorMessage .ValidationError }}
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const modalElement = document.getElementById('addProduct');
+            
+            if (modalElement) {
+                const modal = new bootstrap.Modal(modalElement);
+                modal.show();
+            }
+        });
+    </script>
+    {{ end }}
+    
+    {{ if .EditId }}
+    <script type="text/javascript">
+        document.addEventListener('DOMContentLoaded', function() {
+            const editModalId = "#editProduct{{ .EditId }}";
+            const editModalElement = document.querySelector(editModalId);
+            if (editModalElement) {
+                const editModal = new bootstrap.Modal(editModalElement);
+                editModal.show();
+            }
+        });
+    </script>
+    {{ end }}
 {{end}}

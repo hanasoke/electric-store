@@ -175,3 +175,27 @@ func Delete(id int) error {
 
 	return err
 }
+
+// Fungsi tambahan untuk mendapatkan semua kategori
+func GetAllForSelect() ([]entities.Category, error) {
+	rows, err := config.DB.Query(`SELECT id, name FROM categories ORDER BY name`)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+
+	var categories []entities.Category
+
+	for rows.Next() {
+		var category entities.Category
+		if err := rows.Scan(
+			&category.Id,
+			&category.Name,
+		); err != nil {
+			return nil, err
+		}
+		categories = append(categories, category)
+	}
+
+	return categories, nil
+}
